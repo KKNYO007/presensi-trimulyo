@@ -1,0 +1,83 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  name        String
+  jabatan     String   // Kalurahan role: Lurah, Dukuh A, Dukuh B, Ulu-ulu, etc.
+  phoneNumber String?  @map("phone_number")
+  avatarUrl   String?  @map("avatar_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  presences     Presence[]
+  activities    Activity[]
+  leaveRequests LeaveRequest[]
+
+  @@map("users")
+}
+
+model Presence {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  date         DateTime  @db.Date
+  checkInTime  DateTime? @map("check_in_time") @db.Time()
+  checkOutTime DateTime? @map("check_out_time") @db.Time()
+  latitude     Float
+  longitude    Float
+  distanceKm   Float     @map("distance_km")
+  selfieUrl    String    @map("selfie_url")
+  status       String    // TEPAT_WAKTU, TERLAMBAT, IZIN
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date]) // One presence per user per day
+  @@map("presences")
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  date        DateTime @db.Date
+  title       String
+  description String
+  startTime   DateTime @map("start_time") @db.Time()
+  endTime     DateTime @map("end_time") @db.Time()
+  photoUrls   Json?    @map("photo_urls") // Array of photo paths
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activities")
+}
+
+model LeaveRequest {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String   // SAKIT, IZIN, CUTI
+  startDate DateTime @map("start_date") @db.Date
+  endDate   DateTime @map("end_date") @db.Date
+  notes     String?
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("leave_requests")
+}

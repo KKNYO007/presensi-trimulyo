@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistem Presensi Kalurahan Trimulyo - Daerah Istimewa Yogyakarta">
+    <title>Sistem Presensi | Kalurahan Trimulyo</title>
+    <link rel="stylesheet" href="css/javanese-theme.css">
+    <link rel="icon" href="logo-sleman.png" type="image/png">
+</head>
+
+<body>
+
+    <!-- ============================================
+         HERO SECTION - Main Signboard Style
+         ============================================ -->
+    <header class="header-diy">
+        <img src="logo-sleman.png" alt="Logo Sleman" style="width: 60px; height: 60px; margin-bottom: 8px;">
+        <h1 class="header-diy__title">Daerah Istimewa Yogyakarta</h1>
+        <p class="header-diy__subtitle">ꦢꦲꦺꦫꦃꦆꦱ꧀ꦠꦶꦩꦺꦮꦪꦺꦴꦒꦾꦏꦂꦠ</p>
+    </header>
+
+    <!-- Main Panel with Batik Border -->
+    <main class="container" style="margin-top: -30px; position: relative; z-index: 10;">
+        <div class="javanese-panel-bordered">
+            <div class="batik-border-diamond">
+                <div class="panel-inner corner-ornaments">
+                    <!-- Corner Ornaments -->
+                    <div class="corner-ornament corner-ornament--top-left"></div>
+                    <div class="corner-ornament corner-ornament--top-right"></div>
+                    <div class="corner-ornament corner-ornament--bottom-left"></div>
+                    <div class="corner-ornament corner-ornament--bottom-right"></div>
+
+                    <!-- Title Block -->
+                    <div class="title-block">
+                        <h2 class="title-block__main">Kalurahan Trimulyo</h2>
+                        <p class="title-block__javanese">ꦏꦭꦸꦫꦃꦲꦤ꧀ꦠꦿꦶꦩꦸꦭꦾꦺꦴ</p>
+                        <p class="title-block__address">Jln. Salak KM 3, Trimulyo, Sleman, DIY 55513</p>
+                    </div>
+
+                    <!-- Emblem Row -->
+                    <div class="emblem-row">
+                        <div class="emblem emblem--shield">
+                            <img src="logo-sleman.png" alt="Sleman">
+                        </div>
+                        <div class="emblem emblem--circle">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <div class="emblem">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                        </div>
+                        <div class="emblem emblem--circle">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                        <div class="emblem">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex-center gap-4 mt-6">
+                        <a href="#login" class="btn btn-primary">Masuk Sistem</a>
+                        <a href="#info" class="btn btn-secondary">Informasi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============================================
+         LOGIN MODULE - Pamong/Karyawan
+         ============================================ -->
+    <section class="container mt-8" id="login">
+        <div class="grid gap-6"
+            style="grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); align-items: start;">
+
+            <!-- Login Form Card -->
+            <div class="card card-batik">
+                <div class="card-header">
+                    <h3 class="card-header__title">Masuk Sistem Presensi Pamong</h3>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label" for="nip">NIP / Nomor Induk Pegawai</label>
+                            <input type="text" id="nip" class="form-input" placeholder="Masukkan NIP Anda">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">Kata Sandi</label>
+                            <input type="password" id="password" class="form-input" placeholder="Masukkan kata sandi">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                            <input type="checkbox" id="remember" style="width: 18px; height: 18px;">
+                            <label for="remember" style="font-size: var(--text-sm); color: var(--color-gray-600);">Ingat
+                                saya di perangkat ini</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="margin-right: 8px;">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                                <polyline points="10 17 15 12 10 7" />
+                                <line x1="15" y1="12" x2="3" y2="12" />
+                            </svg>
+                            Masuk
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#"
+                        style="color: var(--color-gray-500); text-decoration: none; font-size: var(--text-sm);">Lupa
+                        kata sandi? Hubungi Admin</a>
+                </div>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="card" id="info">
+                <div class="card-header">
+                    <h3 class="card-header__title">Informasi Sistem</h3>
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="font-size: var(--text-lg); color: var(--color-primary-700); margin: 0 0 8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="16" x2="12" y2="12" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
+                            Tentang Sistem
+                        </h4>
+                        <p style="color: var(--color-gray-600); font-size: var(--text-sm); line-height: 1.6;">
+                            Sistem Presensi Digital untuk Pamong dan Karyawan Kalurahan Trimulyo.
+                            Mencatat kehadiran harian secara otomatis dengan teknologi PWA.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="font-size: var(--text-lg); color: var(--color-primary-700); margin: 0 0 8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            Keamanan
+                        </h4>
+                        <p style="color: var(--color-gray-600); font-size: var(--text-sm); line-height: 1.6;">
+                            Data terenkripsi dan tersimpan aman. Verifikasi lokasi GPS untuk memastikan presensi
+                            dilakukan di lokasi kantor.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 style="font-size: var(--text-lg); color: var(--color-primary-700); margin: 0 0 8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
+                                <line x1="23" y1="1" x2="17" y2="7" />
+                            </svg>
+                            Bantuan
+                        </h4>
+                        <p style="color: var(--color-gray-600); font-size: var(--text-sm); line-height: 1.6;">
+                            Hubungi Admin: <strong>(0274) 123-4567</strong><br>
+                            Email: admin@trimulyo.desa.id
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         UI COMPONENTS SHOWCASE
+         ============================================ -->
+    <section class="container mt-8 p-6" style="background-color: var(--color-white); border-radius: var(--radius-lg);">
+        <h2 class="text-heading mb-6" style="font-size: var(--text-xl); color: var(--color-primary-700);">
+            Komponen UI - Design System
+        </h2>
+
+        <!-- Buttons -->
+        <h3 style="font-size: var(--text-lg); margin-bottom: 16px; color: var(--color-gray-700);">Tombol</h3>
+        <div class="flex gap-4" style="flex-wrap: wrap; margin-bottom: 24px;">
+            <button class="btn btn-primary">Primary Button</button>
+            <button class="btn btn-secondary">Secondary Button</button>
+            <button class="btn btn-maroon">Maroon Button</button>
+        </div>
+
+        <!-- Badges -->
+        <h3 style="font-size: var(--text-lg); margin-bottom: 16px; color: var(--color-gray-700);">Badge Status</h3>
+        <div class="flex gap-4" style="flex-wrap: wrap; margin-bottom: 24px;">
+            <span class="badge badge-success">Hadir</span>
+            <span class="badge badge-warning">Pending</span>
+            <span class="badge badge-error">Tidak Hadir</span>
+            <span class="badge badge-info">Informasi</span>
+        </div>
+
+        <!-- Form Elements -->
+        <h3 style="font-size: var(--text-lg); margin-bottom: 16px; color: var(--color-gray-700);">Form Elements</h3>
+        <div class="grid gap-4"
+            style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 24px;">
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Text Input</label>
+                <input type="text" class="form-input" placeholder="Placeholder text">
+            </div>
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Select Input</label>
+                <select class="form-input">
+                    <option>Pilih opsi...</option>
+                    <option>Opsi 1</option>
+                    <option>Opsi 2</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Typography -->
+        <h3 style="font-size: var(--text-lg); margin-bottom: 16px; color: var(--color-gray-700);">Tipografi</h3>
+        <p class="text-display text-gold-emboss" style="font-size: var(--text-3xl); margin-bottom: 8px;">KALURAHAN
+            TRIMULYO</p>
+        <p class="text-javanese"
+            style="font-size: var(--text-xl); color: var(--color-primary-700); margin-bottom: 8px;">ꦏꦭꦸꦫꦃꦲꦤ꧀ꦠꦿꦶꦩꦸꦭꦾꦺꦴ
+        </p>
+        <p class="gold-shimmer text-heading" style="font-size: var(--text-2xl);">Teks dengan Efek Gold Shimmer</p>
+
+        <!-- Cards Preview -->
+        <h3 style="font-size: var(--text-lg); margin: 24px 0 16px; color: var(--color-gray-700);">Card Variants</h3>
+        <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <!-- Stat Card -->
+            <div class="stat-card">
+                <div class="stat-card__icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                </div>
+                <p class="stat-card__value">24</p>
+                <p class="stat-card__label">Total Pamong</p>
+            </div>
+
+            <!-- Stat Card Green -->
+            <div class="stat-card stat-card--green">
+                <div class="stat-card__icon"
+                    style="background: linear-gradient(135deg, var(--color-batik-green-500), var(--color-batik-green-700));">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <p class="stat-card__value">22</p>
+                <p class="stat-card__label">Hadir Hari Ini</p>
+            </div>
+
+            <!-- Stat Card Maroon -->
+            <div class="stat-card stat-card--maroon">
+                <div class="stat-card__icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                </div>
+                <p class="stat-card__value">08:15</p>
+                <p class="stat-card__label">Rata-rata Masuk</p>
+            </div>
+        </div>
+
+        <!-- Table Preview -->
+        <h3 style="font-size: var(--text-lg); margin: 24px 0 16px; color: var(--color-gray-700);">Tabel</h3>
+        <table class="table-javanese">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Bambang Sutrisno</td>
+                    <td>Lurah</td>
+                    <td><span class="badge badge-success">Aktif</span></td>
+                </tr>
+                <tr>
+                    <td>Sri Mulyani</td>
+                    <td>Sekretaris</td>
+                    <td><span class="badge badge-success">Aktif</span></td>
+                </tr>
+                <tr>
+                    <td>Ahmad Dahlan</td>
+                    <td>Kasi Pemerintahan</td>
+                    <td><span class="badge badge-warning">Cuti</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ============================================
+         NAVIGATION DEMO
+         ============================================ -->
+    <section class="container mt-8">
+        <h2 class="text-heading mb-4" style="font-size: var(--text-xl); color: var(--color-primary-700);">
+            Navigasi
+        </h2>
+        <nav class="nav-javanese">
+            <ul class="nav-javanese__list">
+                <li><a href="#" class="nav-javanese__link nav-javanese__link--active">Beranda</a></li>
+                <li><a href="#" class="nav-javanese__link">Presensi</a></li>
+                <li><a href="#" class="nav-javanese__link">Riwayat</a></li>
+                <li><a href="#" class="nav-javanese__link">Profil</a></li>
+                <li><a href="#" class="nav-javanese__link">Admin</a></li>
+            </ul>
+        </nav>
+    </section>
+
+    <!-- ============================================
+         SIDEBAR DEMO
+         ============================================ -->
+    <section class="container mt-8">
+        <h2 class="text-heading mb-4" style="font-size: var(--text-xl); color: var(--color-primary-700);">
+            Sidebar (untuk Desktop Admin)
+        </h2>
+        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+            <!-- Sidebar Preview -->
+            <aside class="sidebar-javanese" style="min-height: auto; width: 280px; border-radius: var(--radius-lg);">
+                <div class="sidebar-javanese__logo">
+                    <img src="logo-sleman.png" alt="Logo Sleman">
+                    <h3 class="sidebar-javanese__title">TRIMULYO</h3>
+                </div>
+                <nav>
+                    <ul class="sidebar-javanese__nav">
+                        <li class="sidebar-javanese__item">
+                            <a href="#" class="sidebar-javanese__link sidebar-javanese__link--active">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                    <polyline points="9 22 9 12 15 12 15 22" />
+                                </svg>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="sidebar-javanese__item">
+                            <a href="#" class="sidebar-javanese__link">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                Data Pamong
+                            </a>
+                        </li>
+                        <li class="sidebar-javanese__item">
+                            <a href="#" class="sidebar-javanese__link">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                Rekap Presensi
+                            </a>
+                        </li>
+                        <li class="sidebar-javanese__item">
+                            <a href="#" class="sidebar-javanese__link">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                </svg>
+                                Laporan
+                            </a>
+                        </li>
+                        <li class="sidebar-javanese__item">
+                            <a href="#" class="sidebar-javanese__link">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path
+                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                </svg>
+                                Pengaturan
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Module Cards Info -->
+            <div style="flex: 1; min-width: 300px;">
+                <h3 style="font-size: var(--text-lg); margin-bottom: 16px; color: var(--color-gray-700);">Modul Tersedia
+                    (Pamong)</h3>
+                <div class="grid gap-4" style="grid-template-columns: 1fr;">
+                    <div class="card">
+                        <div class="card-body" style="display: flex; align-items: center; gap: 16px;">
+                            <div
+                                style="width: 48px; height: 48px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800)); display: flex; align-items: center; justify-content: center;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="var(--color-gold-500)" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 4px; color: var(--color-primary-700);">Presensi Harian</h4>
+                                <p style="margin: 0; font-size: var(--text-sm); color: var(--color-gray-500);">
+                                    Clock-in/out dengan GPS & selfie</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" style="display: flex; align-items: center; gap: 16px;">
+                            <div
+                                style="width: 48px; height: 48px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-batik-green-500), var(--color-batik-green-700)); display: flex; align-items: center; justify-content: center;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white"
+                                    stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 4px; color: var(--color-primary-700);">Riwayat Kehadiran</h4>
+                                <p style="margin: 0; font-size: var(--text-sm); color: var(--color-gray-500);">Lihat
+                                    rekap bulanan & harian</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" style="display: flex; align-items: center; gap: 16px;">
+                            <div
+                                style="width: 48px; height: 48px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-gold-500), var(--color-gold-700)); display: flex; align-items: center; justify-content: center;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="var(--color-primary-900)" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 4px; color: var(--color-primary-700);">Profil Saya</h4>
+                                <p style="margin: 0; font-size: var(--text-sm); color: var(--color-gray-500);">Edit data
+                                    pribadi & foto</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="footer-javanese mt-8">
+        <img src="logo-sleman.png" alt="Logo Sleman" style="width: 60px; height: 60px; margin-bottom: 16px;">
+        <h4 class="footer-javanese__title">Kalurahan Trimulyo</h4>
+        <p class="footer-javanese__address">
+            Jln. Salak KM 3, Trimulyo, Sleman<br>
+            Daerah Istimewa Yogyakarta 55513
+        </p>
+
+        <!-- Emblem Row in Footer -->
+        <div class="emblem-row mb-6">
+            <div class="emblem emblem--circle" style="background-color: rgba(255,255,255,0.1);">
+                <img src="logo-sleman.png" alt="Sleman" style="width: 28px; height: 28px;">
+            </div>
+            <div class="emblem" style="background-color: rgba(255,255,255,0.1);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-500)"
+                    stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                </svg>
+            </div>
+            <div class="emblem" style="background-color: rgba(255,255,255,0.1);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold-500)"
+                    stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+            </div>
+        </div>
+
+        <p class="footer-javanese__copyright">
+            © 2026 Sistem Presensi Kalurahan Trimulyo. Hak Cipta Dilindungi.
+        </p>
+    </footer>
+
+</body>
+
+</html>
