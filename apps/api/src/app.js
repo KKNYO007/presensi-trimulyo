@@ -9,9 +9,12 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 
+// Trust proxy for Railway/Heroku
+app.set('trust proxy', 1);
+
 // CORS configuration
 app.use(cors({
-    origin: '*', // Allow all origins for debugging connection issues
+    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://presensi-trimulyo-api-production.up.railway.app'],
     credentials: true,
 }));
 
