@@ -3,9 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+// const config = require('./config/env');
 const config = require('./config/env');
-const config = require('./config/env');
-// const routes = require('./routes');
+const routes = require('./routes');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
@@ -28,7 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // API routes
 app.get('/', (req, res) => res.status(200).send('OK - Server is reachable!')); // Health check
-// app.use('/api', routes);
+app.use('/api', routes);
 
 // 404 handler
 app.use(notFound);
