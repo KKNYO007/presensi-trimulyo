@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // API routes
+app.get('/', (req, res) => res.status(200).send('OK')); // Health check
 app.use('/api', routes);
 
 // 404 handler
