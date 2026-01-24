@@ -19,4 +19,9 @@ module.exports = {
         maxFileSizeMb: parseInt(process.env.MAX_FILE_SIZE_MB, 10) || 5,
         uploadDir: process.env.UPLOAD_DIR || 'uploads',
     },
+
+    supabase: {
+        url: process.env.SUPABASE_URL,
+        anonKey: process.env.SUPABASE_ANON_KEY,
+    }
 };

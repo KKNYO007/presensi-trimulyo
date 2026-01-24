@@ -13,6 +13,8 @@ const PresensiMasuk = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [alreadyCheckedIn, setAlreadyCheckedIn] = useState(false);
+    const [cameraError, setCameraError] = useState(null);
+    const [retryTrigger, setRetryTrigger] = useState(0);
 
     // Kantor Kelurahan Trimulyo Coordinates
     const OFFICE_COORDS = { lat: -7.682067371531455, lng: 110.35755937948723 };
@@ -147,29 +149,108 @@ const PresensiMasuk = () => {
         }
 
         let stream = null;
+        let isMounted = true;
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
 
         const startCamera = async () => {
+            setCameraError(null);
+
+            // Ensure any previous stream is stopped before starting a new one
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            if (videoRef.current && videoRef.current.srcObject) {
+                videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+                videoRef.current.srcObject = null;
+            }
+
+            // Short delay to let the hardware release the camera
+            // Wait longer if we are retrying manually
+            await new Promise(r => setTimeout(r, 500));
+            if (!isMounted) return;
+
             try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user' }
-                });
+                // Try user facing mode first
+                let newStream;
+                try {
+                    newStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user' }
+                    });
+                } catch (err) {
+                    // Fallback: Try any video source if 'user' mode fails
+                    console.warn("Retrying with fallback constraints...", err);
+                    newStream = await navigator.mediaDevices.getUserMedia({
+                        video: true
+                    });
+                }
+
+                if (!isMounted) {
+                    // Component unmounted while waiting for camera, stop it immediately
+                    newStream.getTracks().forEach(track => track.stop());
+                    return;
+                }
+
+                stream = newStream;
                 if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
+                    videoRef.current.srcObject = newStream;
                 }
             } catch (err) {
+                if (!isMounted) return;
                 console.error("Error accessing camera:", err);
-                // Fallback or alert could be added here
+
+                // Handle AbortError specifically with auto-retry
+                if (err.name === 'AbortError' || err.message.includes('Starting videoinput failed')) {
+                    if (retryCount < MAX_RETRIES) {
+                        console.log(`AbortError encountered. Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+                        retryCount++;
+                        setTimeout(startCamera, 1000); // Wait 1s and retry
+                        return;
+                    }
+                }
+
+                // Log available devices for debugging help
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    console.log("Available devices:", devices.map(d => `${d.kind}: ${d.label}`));
+                } catch (e) {
+                    console.error("Could not enumerate devices:", e);
+                }
+
+                let msg = err.message || "Unknown error";
+                let name = err.name || "Error";
+
+                setCameraError(`${name}: ${msg}`);
+
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    alert("Izin kamera ditolak. Mohon izinkan akses kamera untuk melakukan presensi.");
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    alert("Kamera tidak ditemukan.");
+                } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                    alert("Kamera tidak dapat diakses (NotReadableError). Kemungkinan sedang digunakan aplikasi lain atau driver bermasalah. Coba restart browser atau device.");
+                } else {
+                    if (err.name !== 'AbortError') {
+                        alert("Gagal mengakses kamera: " + msg);
+                    }
+                }
             }
         };
 
         startCamera();
 
         return () => {
+            isMounted = false;
+            // Stop local stream variable if it was set
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
+            // Also stop stream in video element if it exists
+            if (videoRef.current && videoRef.current.srcObject) {
+                videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+                videoRef.current.srcObject = null;
+            }
         };
-    }, []);
+    }, [retryTrigger]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -215,6 +296,19 @@ const PresensiMasuk = () => {
                         <div className="ornament-corner ornament-br"></div>
 
                         <div className="absolute inset-[3px] rounded-xl overflow-hidden bg-black/50">
+                            {cameraError ? (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-black/80 z-50">
+                                    <span className="material-symbols-outlined text-4xl text-red-500 mb-2">error</span>
+                                    <p className="text-white font-bold mb-1">Gagal Memuat Kamera</p>
+                                    <p className="text-sm text-gray-300 font-mono mb-4 break-words w-full">{cameraError}</p>
+                                    <button
+                                        onClick={() => setRetryTrigger(prev => prev + 1)}
+                                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors text-white border border-white/20"
+                                    >
+                                        Coba Lagi
+                                    </button>
+                                </div>
+                            ) : null}
                             <video
                                 ref={videoRef}
                                 autoPlay
@@ -222,7 +316,7 @@ const PresensiMasuk = () => {
                                 muted
                                 className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                                 <div className="w-48 h-48 border border-white/30 rounded-full relative">
                                     <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-accent"></div>
                                     <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-accent"></div>

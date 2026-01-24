@@ -14,20 +14,8 @@ const activitiesDir = path.join(config.upload.uploadDir, 'activities');
     }
 });
 
-// Configure multer storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Determine destination based on field name
-        const dest = file.fieldname === 'selfie' ? selfiesDir : activitiesDir;
-        cb(null, dest);
-    },
-    filename: (req, file, cb) => {
-        // Generate unique filename
-        const ext = path.extname(file.originalname);
-        const filename = `${uuidv4()}${ext}`;
-        cb(null, filename);
-    },
-});
+// Configure multer storage - Use memory storage for Supabase upload
+const storage = multer.memoryStorage();
 
 // File filter - only allow images
 const fileFilter = (req, file, cb) => {

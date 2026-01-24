@@ -33,7 +33,8 @@ router.post('/check-in', uploadSelfie, async (req, res, next) => {
             });
         }
 
-        const selfieUrl = `/uploads/selfies/${req.file.filename}`;
+        const { uploadToSupabase } = require('../utils/storage');
+        const selfieUrl = await uploadToSupabase(req.file.buffer, 'selfies', req.file.originalname);
 
         const presence = await presenceService.checkIn(req.user.id, {
             latitude: parseFloat(latitude),

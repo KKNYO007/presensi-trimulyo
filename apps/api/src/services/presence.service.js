@@ -4,6 +4,26 @@ const { generatePresenceExcel } = require('../utils/export');
 const { PRESENCE_STATUS, WORK_SCHEDULE } = require('../config/constants');
 
 /**
+ * Get "Today" date object based on WIB (UTC+7)
+ * This ensures that 00:00 - 06:59 WIB counts as the correct day,
+ * instead of the previous day (due to being UTC-1 if calculated naively on a UTC server)
+ */
+function getTodayWIB() {
+    const now = new Date();
+    // Shift time to WIB (UTC+7)
+    const wibTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+
+    // Extract YYYY-MM-DD from the shifted time using UTC methods 
+    // (since we manually shifted the epoch, the UTC components now represent WIB components)
+    const year = wibTime.getUTCFullYear();
+    const month = wibTime.getUTCMonth();
+    const day = wibTime.getUTCDate();
+
+    // Return midnight UTC of that specific day
+    return new Date(Date.UTC(year, month, day));
+}
+
+/**
  * Check in for the day
  * @param {string} userId - User ID
  * @param {Object} data - Check-in data
@@ -12,8 +32,8 @@ const { PRESENCE_STATUS, WORK_SCHEDULE } = require('../config/constants');
 async function checkIn(userId, data) {
     const { latitude, longitude, selfieUrl } = data;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Use WIB aware date
+    const today = getTodayWIB();
 
     // Check if already checked in today
     const existingPresence = await prisma.presence.findFirst({
@@ -22,23 +42,6 @@ async function checkIn(userId, data) {
             date: today,
         },
     });
-
-    // const startOfDay = new Date();
-    // startOfDay.setHours(0, 0, 0, 0);
-
-    // const endOfDay = new Date();
-    // endOfDay.setHours(23, 59, 59, 999);
-
-    // const existingPresence = await prisma.presence.findFirst({
-    //     where: {
-    //         userId,
-    //         date: {
-    //             gte: startOfDay,
-    //             lte: endOfDay,
-    //         },
-    //     },
-    // });
-
 
     if (existingPresence) {
         throw { statusCode: 400, message: 'Anda sudah melakukan presensi masuk hari ini' };
@@ -49,11 +52,33 @@ async function checkIn(userId, data) {
 
     // Determine status based on time
     const now = new Date();
-    const [expectedHour, expectedMinute] = WORK_SCHEDULE.checkInTime.split(':').map(Number);
-    const expectedTime = new Date();
-    expectedTime.setHours(expectedHour, expectedMinute, 0, 0);
 
-    const status = now > expectedTime ? PRESENCE_STATUS.TERLAMBAT : PRESENCE_STATUS.TEPAT_WAKTU;
+    // For Tepat Waktu logic, we also need to be careful. 
+    // WORK_SCHEDULE.checkInTime is local time (e.g. 07:30).
+    // We should compare against 'Today WIB at 07:30 WIB' converted to UTC/Absolute.
+    const [expectedHour, expectedMinute] = WORK_SCHEDULE.checkInTime.split(':').map(Number);
+    const expectedTime = new Date(today.getTime()); // Start with midnight WIB (stored as UTC)
+    // Subtract 7 hours to get back to real "Today Midnight in WIB" instant? 
+    // Wait, 'today' from getTodayWIB() returns a Date object representing 00:00 UTC of the target date.
+    // E.g. Jan 24 00:00 UTC.
+    // 07:30 WIB is Jan 24 00:30 UTC.
+    // So if 'today' is Jan 24 00:00 UTC...
+    // We just need to add (ExpectedHour - 7) hours? 
+    // OR simpler: comparing `now` (absolute) vs `target` (absolute).
+    // Target is: Today's Date (WIB) at ExpectedHour:ExpectedMinute (WIB).
+
+    // Let's assume 'today' is correct YYYY-MM-DD.
+    // We want YYYY-MM-DD HH:MM:00 WIB converted to standard Date object.
+
+    const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    const currentWIBHour = wibNow.getUTCHours();
+    const currentWIBMinute = wibNow.getUTCMinutes();
+
+    // Simple comparison in "minutes from midnight"
+    const currentTotalMinutes = currentWIBHour * 60 + currentWIBMinute;
+    const expectedTotalMinutes = expectedHour * 60 + expectedMinute;
+
+    const status = currentTotalMinutes > expectedTotalMinutes ? PRESENCE_STATUS.TERLAMBAT : PRESENCE_STATUS.TEPAT_WAKTU;
 
     // Create presence record
     const presence = await prisma.presence.create({
@@ -86,26 +111,14 @@ async function checkIn(userId, data) {
  * @returns {Promise<Object>} Updated presence record
  */
 async function checkOut(userId) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    // const startOfDay = new Date();
-    // startOfDay.setHours(0, 0, 0, 0);
+    const today = getTodayWIB();
 
-    // const endOfDay = new Date();
-    // endOfDay.setHours(23, 59, 59, 999);
     // Find today's presence
     const presence = await prisma.presence.findFirst({
         where: {
             userId,
             date: today,
         },
-        // where: {
-        //     userId,
-        //     date: {
-        //         gte: startOfDay,
-        //         lte: endOfDay,
-        //     },
-        // },
     });
 
     if (!presence) {
@@ -141,8 +154,7 @@ async function checkOut(userId) {
  * @returns {Promise<Object|null>} Today's presence or null
  */
 async function getTodayPresence(userId) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getTodayWIB();
 
     const presence = await prisma.presence.findFirst({
         where: {
@@ -152,22 +164,6 @@ async function getTodayPresence(userId) {
     });
 
     return presence;
-    // const startOfDay = new Date();
-    // startOfDay.setHours(0, 0, 0, 0);
-
-    // const endOfDay = new Date();
-    // endOfDay.setHours(23, 59, 59, 999);
-
-    // return prisma.presence.findFirst({
-    //     where: {
-    //         userId,
-    //         date: {
-    //             gte: startOfDay,
-    //             lte: endOfDay,
-    //         },
-    //     },
-    // });
-
 }
 
 /**
@@ -182,8 +178,10 @@ async function getPresenceHistory(userId, filters = {}) {
     const where = { userId };
 
     if (startDate && endDate) {
+        // Assume inputs are YYYY-MM-DD
+        // We need to match records where 'date' (which is set to Midnight UTC of that WIB day) falls in range.
         where.date = {
-            gte: new Date(startDate),
+            gte: new Date(startDate), // ISO string normally parses to UTC midnight if YYYY-MM-DD
             lte: new Date(endDate),
         };
     }

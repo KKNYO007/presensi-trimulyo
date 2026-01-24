@@ -24,9 +24,14 @@ router.post('/', uploadActivityPhotos, async (req, res, next) => {
         }
 
         // Get photo URLs from uploaded files
-        const photoUrls = req.files
-            ? req.files.map(file => `/uploads/activities/${file.filename}`)
-            : [];
+        const photoUrls = [];
+        if (req.files && req.files.length > 0) {
+            const { uploadToSupabase } = require('../utils/storage');
+            for (const file of req.files) {
+                const url = await uploadToSupabase(file.buffer, 'activities', file.originalname);
+                photoUrls.push(url);
+            }
+        }
 
         const activity = await activityService.createActivity(req.user.id, {
             title,
