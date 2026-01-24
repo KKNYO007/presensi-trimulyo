@@ -4,7 +4,8 @@ const cors = require('cors');
 const path = require('path');
 
 const config = require('./config/env');
-const routes = require('./routes');
+const config = require('./config/env');
+// const routes = require('./routes');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
@@ -14,7 +15,7 @@ app.set('trust proxy', 1);
 
 // CORS configuration
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://presensi-trimulyo-api-production.up.railway.app'],
+    origin: '*', // Temporarily allow ALL for debugging
     credentials: true,
 }));
 
@@ -26,8 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // API routes
-app.get('/', (req, res) => res.status(200).send('OK')); // Health check
-app.use('/api', routes);
+app.get('/', (req, res) => res.status(200).send('OK - Server is reachable!')); // Health check
+// app.use('/api', routes);
 
 // 404 handler
 app.use(notFound);
