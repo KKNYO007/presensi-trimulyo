@@ -11,7 +11,7 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'], // Frontend dev servers
+    origin: '*', // Allow all origins for debugging connection issues
     credentials: true,
 }));
 
@@ -34,7 +34,7 @@ app.use(errorHandler);
 // Start server
 const PORT = config.port;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log('');
     console.log('🏛️  ==========================================');
     console.log('    PRESENSI TRIMULYO API');
