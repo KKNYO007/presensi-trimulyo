@@ -64,6 +64,10 @@ prisma generate && prisma migrate deploy
 *Caution*: This runs migrations on every deploy. Ensure your migrations are safe.
 
 ## Troubleshooting
+- **"Prepared statement already exists" Error**:
+    - This happens when using Supabase's **Transaction Pooler** (port 6543).
+    - **Fix**: Append `?pgbouncer=true` to your `DATABASE_URL` in Railway Variables.
+    - Example: `postgres://...:6543/postgres?pgbouncer=true`
 - **"No workspaces found" Error**: 
     - This happens if your **Start Command** tries to use `--workspace` (e.g., `npm run start --workspace=...`) but you have set your **Root Directory** to `apps/api`.
     - **Fix**: Change **Start Command** to `npm start` (or `node src/app.js`).
