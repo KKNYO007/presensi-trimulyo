@@ -265,12 +265,12 @@ const PresensiMasuk = () => {
     }
 
     return (
-        <div className="relative z-10 flex h-full grow flex-col items-center w-full max-w-[1440px] mx-auto min-h-screen">
+        <div className="relative z-10 flex h-[100dvh] grow flex-col items-center w-full max-w-[1440px] mx-auto overflow-hidden">
             {/* Hidden canvas for photo capture */}
             <canvas ref={canvasRef} className="hidden"></canvas>
 
             {/* Main Container */}
-            <div className="w-full max-w-[480px] min-h-screen flex flex-col bg-white/80 dark:bg-[#1e1414]/90 shadow-2xl backdrop-blur-sm border-x border-[#f1eaea] dark:border-white/5 relative">
+            <div className="w-full max-w-[480px] h-full flex flex-col bg-white/80 dark:bg-[#1e1414]/90 shadow-2xl backdrop-blur-sm border-x border-[#f1eaea] dark:border-white/5 relative">
 
                 {/* Header */}
                 <header className="flex items-center justify-between px-6 pt-8 pb-4 bg-[#fbf9f9] dark:bg-background-dark/50 z-20">

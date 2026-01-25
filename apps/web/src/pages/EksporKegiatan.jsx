@@ -6,10 +6,10 @@ export default function EksporKegiatan() {
     const navigate = useNavigate();
 
     return (
-        <div className="bg-background-light dark:bg-background-dark font-display text-[#181010] min-h-screen flex flex-col overflow-hidden">
+        <div className="bg-background-light dark:bg-background-dark font-display text-[#181010] h-[100dvh] flex flex-col overflow-hidden">
             <div className="fixed inset-0 bg-batik-pattern z-0 pointer-events-none opacity-5"></div>
-            <div className="relative z-10 flex h-full grow flex-col items-center w-full max-w-[1440px] mx-auto">
-                <div className="w-full max-w-[480px] min-h-screen flex flex-col bg-white/80 dark:bg-[#1e1414]/90 shadow-2xl backdrop-blur-sm border-x border-[#f1eaea] dark:border-white/5 relative">
+            <div className="relative z-10 flex h-full grow flex-col items-center w-full max-w-[1440px] mx-auto overflow-hidden">
+                <div className="w-full max-w-[480px] h-full flex flex-col bg-white/80 dark:bg-[#1e1414]/90 shadow-2xl backdrop-blur-sm border-x border-[#f1eaea] dark:border-white/5 relative">
 
                     {/* Header */}
                     <header className="flex items-center justify-between px-6 pt-8 pb-4 bg-[#fbf9f9] dark:bg-background-dark/50 z-20">

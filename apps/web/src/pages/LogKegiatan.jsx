@@ -121,7 +121,7 @@ const LogKegiatan = () => {
     };
 
     return (
-        <div className="relative z-10 flex h-full grow flex-col items-center w-full max-w-[1440px] mx-auto">
+        <div className="relative z-10 flex h-[100dvh] grow flex-col items-center w-full max-w-[1440px] mx-auto overflow-hidden">
             {/* Camera Overlay */}
             {isCameraOpen && (
                 <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center">
@@ -151,7 +151,7 @@ const LogKegiatan = () => {
                 </div>
             )}
 
-            <div className="w-full max-w-[480px] min-h-screen flex flex-col bg-white/80 dark:bg-[#1e1414]/90 shadow-2xl backdrop-blur-sm border-x border-[#f1eaea] dark:border-white/5 relative">
+            <div className="w-full max-w-[480px] h-full flex flex-col bg-white/80 dark:bg-[#1e1414]/90 shadow-2xl backdrop-blur-sm border-x border-[#f1eaea] dark:border-white/5 relative">
                 <header className="flex items-center gap-4 px-6 pt-8 pb-4 bg-[#fbf9f9] dark:bg-background-dark/50 sticky top-0 z-20 backdrop-blur-md">
                     <button
                         onClick={() => navigate(-1)}
