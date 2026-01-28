@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as presenceService from '../services/presence.service';
+import { useAuth } from '../contexts/AuthContext';
+
 import { useAuth } from '../contexts/AuthContext';
 
 // Fix for Leaflet default icon issues in React
@@ -17,6 +19,27 @@ let DefaultIcon = L.icon({
     popupAnchor: [1, -34],
     tooltipAnchor: [16, -28]
 });
+
+// Custom icon for Office
+let OfficeIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    tooltipAnchor: [16, -28]
+});
+
+// Component to handle map bounds
+function ChangeView({ bounds }) {
+    const map = useMap();
+    useEffect(() => {
+        if (bounds) {
+            map.fitBounds(bounds, { padding: [20, 20] });
+        }
+    }, [bounds, map]);
+    return null;
+}
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -64,9 +87,12 @@ const DetailPresensi = () => {
         return timeStr.substring(0, 5).replace('.', ':');
     }
 
-    const position = presence?.latitude && presence?.longitude
+    const officePosition = [-7.7123, 110.3645]; // Kantor Kelurahan Trimulyo
+    const userPosition = presence?.latitude && presence?.longitude
         ? [parseFloat(presence.latitude), parseFloat(presence.longitude)]
-        : [-7.7123, 110.3645];
+        : null;
+
+    const bounds = userPosition ? [officePosition, userPosition] : null;
 
     const statusDisplay = presence?.status === 'TEPAT_WAKTU' ? 'Tepat Waktu' : 'Terlambat';
     const isOnTime = presence?.status === 'TEPAT_WAKTU';
@@ -173,8 +199,8 @@ const DetailPresensi = () => {
                                     </div>
 
                                     <MapContainer
-                                        center={position}
-                                        zoom={15}
+                                        center={officePosition}
+                                        zoom={14}
                                         scrollWheelZoom={false}
                                         style={{ height: '100%', width: '100%' }}
                                         className="grayscale-[20%] group-hover:grayscale-0 transition-all duration-500 z-0"
@@ -183,11 +209,26 @@ const DetailPresensi = () => {
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                         />
-                                        <Marker position={position}>
+                                        <Marker position={officePosition} icon={OfficeIcon}>
                                             <Popup>
                                                 Kantor Kelurahan Trimulyo
                                             </Popup>
                                         </Marker>
+                                        {userPosition && (
+                                            <>
+                                                <Marker position={userPosition}>
+                                                    <Popup>
+                                                        Lokasi Anda
+                                                    </Popup>
+                                                </Marker>
+                                                <Polyline
+                                                    positions={[officePosition, userPosition]}
+                                                    color="#6b2424"
+                                                    dashArray="5, 5"
+                                                />
+                                                <ChangeView bounds={bounds} />
+                                            </>
+                                        )}
                                     </MapContainer>
                                 </div>
                             </main>
