@@ -37,6 +37,16 @@ export async function getTodayPresence() {
 }
 
 /**
+ * Get presence detail by ID
+ * @param {string} id - Presence ID
+ * @returns {Promise<Object>} Presence detail
+ */
+export async function getPresenceById(id) {
+    const response = await get(`/presence/${id}`);
+    return response.data;
+}
+
+/**
  * Get presence history
  * @param {Object} params - Query parameters
  * @param {string} params.startDate - Start date (YYYY-MM-DD)
@@ -74,6 +84,7 @@ export default {
     checkIn,
     checkOut,
     getTodayPresence,
+    getPresenceById,
     getPresenceHistory,
     exportPresence,
 };

@@ -13,6 +13,7 @@ export default function Dashboard() {
     const [isFabOpen, setIsFabOpen] = useState(false);
     const [activities, setActivities] = useState([]);
     const [todayPresensi, setTodayPresensi] = useState(null);
+    const [presenceHistory, setPresenceHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -51,6 +52,18 @@ export default function Dashboard() {
                     photos: activity.photoUrls || [],
                 })));
             }
+
+            // Load presence history
+            const historyResponse = await presenceService.getPresenceHistory({ limit: 10 });
+            if (historyResponse.data) {
+                setPresenceHistory(historyResponse.data.map(presence => ({
+                    id: presence.id,
+                    date: formatDate(presence.date),
+                    time: presence.checkInTime ? formatTime(presence.checkInTime) : '--:--',
+                    checkOutTime: presence.checkOutTime ? formatTime(presence.checkOutTime) : null,
+                    status: presence.status === 'TEPAT_WAKTU' ? 'Tepat Waktu' : 'Terlambat',
+                })));
+            }
         } catch (error) {
             console.error('Error loading dashboard data:', error);
         } finally {
@@ -75,7 +88,7 @@ export default function Dashboard() {
     function formatDate(dateStr) {
         if (!dateStr) return '';
         const date = new Date(dateStr);
-        return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+        return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     const handleCheckout = async () => {
@@ -120,7 +133,7 @@ export default function Dashboard() {
                                 onCheckOut={handleCheckout}
                             />
                             <ActivityList activities={activities} />
-                            <HistoryList todayEntry={todayPresensi} />
+                            <HistoryList presenceHistory={presenceHistory} loading={loading} />
                         </>
                     )}
                 </main>

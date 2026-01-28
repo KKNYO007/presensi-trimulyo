@@ -12,6 +12,7 @@ import EksporPresensi from './pages/EksporPresensi';
 import PengajuanIzin from './pages/PengajuanIzin';
 import RiwayatIzin from './pages/RiwayatIzin';
 import CameraTest from './pages/CameraTest';
+import DetailPresensi from './pages/DetailPresensi';
 
 function App() {
     return (
@@ -60,6 +61,11 @@ function App() {
                     <Route path="/riwayat-izin" element={
                         <ProtectedRoute>
                             <RiwayatIzin />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/detail-presensi/:id" element={
+                        <ProtectedRoute>
+                            <DetailPresensi />
                         </ProtectedRoute>
                     } />
                     <Route path="/camera-test" element={<CameraTest />} />

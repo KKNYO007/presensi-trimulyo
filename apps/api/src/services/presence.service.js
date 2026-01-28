@@ -10,16 +10,17 @@ const { PRESENCE_STATUS, WORK_SCHEDULE } = require('../config/constants');
  */
 function getTodayWIB() {
     const now = new Date();
-    // Shift time to WIB (UTC+7)
-    const wibTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    // Get current time in Jakarta (WIB)
+    const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: 'numeric', day: 'numeric' };
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const parts = formatter.formatToParts(now);
 
-    // Extract YYYY-MM-DD from the shifted time using UTC methods 
-    // (since we manually shifted the epoch, the UTC components now represent WIB components)
-    const year = wibTime.getUTCFullYear();
-    const month = wibTime.getUTCMonth();
-    const day = wibTime.getUTCDate();
+    const year = parseInt(parts.find(p => p.type === 'year').value);
+    const month = parseInt(parts.find(p => p.type === 'month').value) - 1; // JS months are 0-based
+    const day = parseInt(parts.find(p => p.type === 'day').value);
 
-    // Return midnight UTC of that specific day
+    // Create a UTC date for that specific day (00:00:00 UTC)
+    // This assumes we are storing "dates" as UTC Midnight regardless of timezone
     return new Date(Date.UTC(year, month, day));
 }
 
@@ -167,6 +168,35 @@ async function getTodayPresence(userId) {
 }
 
 /**
+ * Get presence detail by ID
+ * @param {string} userId - User ID
+ * @param {string} presenceId - Presence ID
+ * @returns {Promise<Object|null>} Presence detail
+ */
+async function getPresenceById(userId, presenceId) {
+    const presence = await prisma.presence.findFirst({
+        where: {
+            id: presenceId,
+            userId,
+        },
+        include: {
+            user: {
+                select: {
+                    name: true,
+                    jabatan: true,
+                },
+            },
+        },
+    });
+
+    if (!presence) {
+        throw { statusCode: 404, message: 'Data presensi tidak ditemukan' };
+    }
+
+    return presence;
+}
+
+/**
  * Get presence history with optional date range
  * @param {string} userId - User ID
  * @param {Object} filters - Filter options
@@ -244,6 +274,7 @@ module.exports = {
     checkIn,
     checkOut,
     getTodayPresence,
+    getPresenceById,
     getPresenceHistory,
     exportPresence,
 };
