@@ -16,8 +16,10 @@ export default function RiwayatIzin() {
         try {
             setLoading(true);
             const response = await leaveService.getLeaveRequests({ limit: 50 });
-            // Assuming response.data.data contains the array based on common patterns in this project
-            setRequests(response.data.data || []);
+            console.log('Leave requests response:', response);
+            // Handle different response structures
+            const data = response.data || response;
+            setRequests(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching leave requests:', error);
         } finally {

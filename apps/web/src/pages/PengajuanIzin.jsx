@@ -13,6 +13,7 @@ export default function PengajuanIzin() {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,6 +22,7 @@ export default function PengajuanIzin() {
 
     const handleSubmit = async () => {
         setError('');
+        setSuccess(false);
 
         // Validation
         if (!formData.type || !formData.startDate || !formData.endDate) {
@@ -37,11 +39,16 @@ export default function PengajuanIzin() {
                 notes: formData.notes,
             });
 
-            // Success - navigate to history page
-            navigate('/riwayat-izin');
+            // Show success notification
+            setSuccess(true);
+
+            // Navigate to history page after a short delay
+            setTimeout(() => {
+                navigate('/riwayat-izin');
+            }, 1500);
         } catch (err) {
             console.error('Error submitting leave request:', err);
-            setError(err.response?.data?.message || 'Gagal mengajukan permohonan. Coba lagi.');
+            setError(err.message || err.response?.data?.message || 'Gagal mengajukan permohonan. Coba lagi.');
         } finally {
             setLoading(false);
         }
@@ -76,8 +83,17 @@ export default function PengajuanIzin() {
 
                             {/* Error Message */}
                             {error && (
-                                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-lg">error</span>
                                     {error}
+                                </div>
+                            )}
+
+                            {/* Success Message */}
+                            {success && (
+                                <div className="p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-lg">check_circle</span>
+                                    Pengajuan izin berhasil dikirim! Mengalihkan...
                                 </div>
                             )}
 
