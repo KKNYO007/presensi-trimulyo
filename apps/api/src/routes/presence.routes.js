@@ -134,4 +134,30 @@ router.get('/export', async (req, res, next) => {
     }
 });
 
+
+
+/**
+ * GET /api/presence/:id
+ * Get presence detail by ID
+ */
+router.get('/:id', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        // Skip if ID is not a valid UUID or special keyword like 'today', 'history', 'export'
+        if (['today', 'history', 'export', 'check-in', 'check-out'].includes(id)) {
+            return next();
+        }
+
+        const presence = await presenceService.getPresenceById(req.user.id, id);
+
+        res.json({
+            success: true,
+            data: presence,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;

@@ -159,12 +159,6 @@ const DetailPresensi = () => {
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                 src={presence.selfieUrl}
                                             />
-                                            <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-primary/90 to-transparent flex items-end p-5">
-                                                <div className="flex items-center gap-2 text-white/95">
-                                                    <span className="material-symbols-outlined text-xl text-green-400">face</span>
-                                                    <span className="text-sm font-medium tracking-wide font-display">Verifikasi Wajah Berhasil</span>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 )}
