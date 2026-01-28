@@ -1,9 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import leaveService from '../services/leave.service';
 
 export default function PengajuanIzin() {
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        type: '',
+        startDate: '',
+        endDate: '',
+        notes: '',
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async () => {
+        setError('');
+
+        // Validation
+        if (!formData.type || !formData.startDate || !formData.endDate) {
+            setError('Mohon lengkapi semua field yang wajib diisi.');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await leaveService.createLeaveRequest({
+                type: formData.type,
+                startDate: formData.startDate,
+                endDate: formData.endDate,
+                notes: formData.notes,
+            });
+
+            // Success - navigate to history page
+            navigate('/riwayat-izin');
+        } catch (err) {
+            console.error('Error submitting leave request:', err);
+            setError(err.response?.data?.message || 'Gagal mengajukan permohonan. Coba lagi.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="bg-background-light dark:bg-background-dark font-display text-[#181010] h-[100dvh] flex flex-col overflow-hidden">
@@ -32,6 +74,13 @@ export default function PengajuanIzin() {
                             <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-accent rounded-bl-lg pointer-events-none"></div>
                             <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-accent rounded-br-lg pointer-events-none"></div>
 
+                            {/* Error Message */}
+                            {error && (
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                                    {error}
+                                </div>
+                            )}
+
                             {/* Form Fields */}
                             <div className="flex flex-col gap-2">
                                 <label className="font-serif text-sm font-bold text-primary dark:text-accent ml-1">Tipe Izin</label>
@@ -39,11 +88,16 @@ export default function PengajuanIzin() {
                                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/5 text-primary/70 dark:bg-primary/20">
                                         <span className="material-symbols-outlined text-[18px]">category</span>
                                     </div>
-                                    <select className="w-full bg-transparent border-none p-0 text-gray-700 dark:text-gray-200 font-tech focus:ring-0 cursor-pointer text-sm outline-none">
-                                        <option value="" disabled selected>Pilih salah satu</option>
-                                        <option value="sakit">Sakit</option>
-                                        <option value="izin">Izin Penting</option>
-                                        <option value="cuti">Cuti Tahunan</option>
+                                    <select
+                                        name="type"
+                                        value={formData.type}
+                                        onChange={handleChange}
+                                        className="w-full bg-transparent border-none p-0 text-gray-700 dark:text-gray-200 font-tech focus:ring-0 cursor-pointer text-sm outline-none"
+                                    >
+                                        <option value="" disabled>Pilih salah satu</option>
+                                        <option value="SAKIT">Sakit</option>
+                                        <option value="IZIN">Izin Penting</option>
+                                        <option value="CUTI">Cuti Tahunan</option>
                                     </select>
                                 </div>
                             </div>
@@ -54,7 +108,14 @@ export default function PengajuanIzin() {
                                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/5 text-primary/70 dark:bg-primary/20">
                                         <span className="material-symbols-outlined text-[18px]">calendar_today</span>
                                     </div>
-                                    <input className="w-full bg-transparent border-none p-0 text-gray-700 dark:text-gray-200 font-tech focus:ring-0 cursor-pointer text-sm outline-none" placeholder="Select date" type="date" />
+                                    <input
+                                        name="startDate"
+                                        value={formData.startDate}
+                                        onChange={handleChange}
+                                        className="w-full bg-transparent border-none p-0 text-gray-700 dark:text-gray-200 font-tech focus:ring-0 cursor-pointer text-sm outline-none"
+                                        placeholder="Select date"
+                                        type="date"
+                                    />
                                 </div>
                             </div>
 
@@ -64,7 +125,14 @@ export default function PengajuanIzin() {
                                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/5 text-primary/70 dark:bg-primary/20">
                                         <span className="material-symbols-outlined text-[18px]">event_available</span>
                                     </div>
-                                    <input className="w-full bg-transparent border-none p-0 text-gray-700 dark:text-gray-200 font-tech focus:ring-0 cursor-pointer text-sm outline-none" placeholder="Select date" type="date" />
+                                    <input
+                                        name="endDate"
+                                        value={formData.endDate}
+                                        onChange={handleChange}
+                                        className="w-full bg-transparent border-none p-0 text-gray-700 dark:text-gray-200 font-tech focus:ring-0 cursor-pointer text-sm outline-none"
+                                        placeholder="Select date"
+                                        type="date"
+                                    />
                                 </div>
                             </div>
 
@@ -75,6 +143,9 @@ export default function PengajuanIzin() {
                                         <span className="material-symbols-outlined text-[18px]">description</span>
                                     </div>
                                     <textarea
+                                        name="notes"
+                                        value={formData.notes}
+                                        onChange={handleChange}
                                         className="w-full h-full bg-transparent border-none p-0 text-gray-700 dark:text-gray-200 font-tech focus:ring-0 cursor-text text-sm outline-none resize-none pt-1"
                                         placeholder="Tuliskan keterangan izin anda..."
                                     ></textarea>
@@ -84,10 +155,20 @@ export default function PengajuanIzin() {
                         </div>
 
                         <div className="mt-auto pt-8">
-                            <button className="w-full py-4 bg-accent hover:bg-[#c59a45] text-primary rounded-xl transition-all shadow-lg shadow-accent/20 active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden group">
+                            <button
+                                onClick={handleSubmit}
+                                disabled={loading}
+                                className="w-full py-4 bg-accent hover:bg-[#c59a45] text-primary rounded-xl transition-all shadow-lg shadow-accent/20 active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                                <span className="material-symbols-outlined relative z-10">send</span>
-                                <span className="font-medium text-base relative z-10 tracking-[0.2em] font-display">AJUKAN PERMOHONAN</span>
+                                {loading ? (
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                                ) : (
+                                    <>
+                                        <span className="material-symbols-outlined relative z-10">send</span>
+                                        <span className="font-medium text-base relative z-10 tracking-[0.2em] font-display">AJUKAN PERMOHONAN</span>
+                                    </>
+                                )}
                             </button>
                             <p className="text-center text-xs text-gray-400 mt-3 font-tech italic">
                                 * Menunggu approval admin

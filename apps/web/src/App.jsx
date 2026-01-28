@@ -10,6 +10,7 @@ import Profil from './pages/Profil';
 import EksporKegiatan from './pages/EksporKegiatan';
 import EksporPresensi from './pages/EksporPresensi';
 import PengajuanIzin from './pages/PengajuanIzin';
+import RiwayatIzin from './pages/RiwayatIzin';
 import CameraTest from './pages/CameraTest';
 
 function App() {
@@ -54,6 +55,11 @@ function App() {
                     <Route path="/pengajuan-izin" element={
                         <ProtectedRoute>
                             <PengajuanIzin />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/riwayat-izin" element={
+                        <ProtectedRoute>
+                            <RiwayatIzin />
                         </ProtectedRoute>
                     } />
                     <Route path="/camera-test" element={<CameraTest />} />

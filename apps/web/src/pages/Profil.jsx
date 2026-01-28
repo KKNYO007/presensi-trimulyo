@@ -74,6 +74,13 @@ export default function Profil() {
                                     onClick={() => navigate('/pengajuan-izin')}
                                 />
                                 <MenuButton
+                                    icon="history"
+                                    title="Riwayat Izin"
+                                    subtitle="Lihat riwayat pengajuan"
+                                    accent="primary"
+                                    onClick={() => navigate('/riwayat-izin')}
+                                />
+                                <MenuButton
                                     icon="bar_chart"
                                     title="Ekspor Kegiatan"
                                     subtitle="Unduh data laporan"
