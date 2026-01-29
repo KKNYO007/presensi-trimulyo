@@ -77,9 +77,12 @@ export default function Profil() {
                             <div className="size-10 rounded-full bg-primary flex items-center justify-center text-accent shadow-md">
                                 <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>temple_buddhist</span>
                             </div>
-                            <h1 className="font-serif text-2xl font-bold leading-tight text-primary dark:text-white tracking-tight">
-                                Profil Pegawai
-                            </h1>
+                            <div>
+                                <h1 className="font-serif text-2xl font-bold leading-tight text-primary dark:text-white tracking-tight">
+                                    Profil Pegawai
+                                </h1>
+                                <p className="text-[10px] text-gray-400 font-mono text-right">v2.0 (Dynamic)</p>
+                            </div>
                         </div>
                     </header>
 
