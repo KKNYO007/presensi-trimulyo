@@ -17,6 +17,7 @@ app.set('trust proxy', 1);
 app.use(cors({
     origin: '*', // Temporarily allow ALL for debugging
     credentials: true,
+    exposedHeaders: ['Content-Disposition'], // Allow frontend to read filename
 }));
 
 // Body parsing middleware
