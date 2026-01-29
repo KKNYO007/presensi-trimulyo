@@ -166,7 +166,6 @@ async function generateActivityExcel(activities, user, startDate, endDate) {
     worksheet.getColumn(2).width = 15; // Jam
     worksheet.getColumn(3).width = 30; // Kegiatan
     worksheet.getColumn(4).width = 50; // Deskripsi
-    worksheet.getColumn(5).width = 20; // Extra/Foto placeholder
 
     // Iterate through EVERY day in range
     const start = new Date(startDate);
@@ -194,7 +193,7 @@ async function generateActivityExcel(activities, user, startDate, endDate) {
         const dateRow = worksheet.getRow(currentRowIndex);
         dateRow.getCell(1).value = currentDateString;
         dateRow.getCell(1).font = { bold: true, size: 12 };
-        worksheet.mergeCells(`A${currentRowIndex}:E${currentRowIndex}`);
+        worksheet.mergeCells(`A${currentRowIndex}:D${currentRowIndex}`);
         dateRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'left' };
         dateRow.getCell(1).fill = {
             type: 'pattern',
@@ -205,10 +204,10 @@ async function generateActivityExcel(activities, user, startDate, endDate) {
 
         // 2. Column Header Row
         const folderHeaderRow = worksheet.getRow(currentRowIndex);
-        folderHeaderRow.values = ['No', 'Jam', 'Kegiatan', 'Deskripsi', 'Foto (Link)'];
+        folderHeaderRow.values = ['No', 'Jam', 'Kegiatan', 'Deskripsi'];
         folderHeaderRow.font = { bold: true };
         folderHeaderRow.eachCell((cell, colNumber) => {
-            if (colNumber <= 5) { // Limit styling to columns we use
+            if (colNumber <= 4) { // Limit styling to columns we use
                 cell.fill = {
                     type: 'pattern',
                     pattern: 'solid',
@@ -224,7 +223,6 @@ async function generateActivityExcel(activities, user, startDate, endDate) {
         if (dayActivities.length > 0) {
             dayActivities.forEach((activity, idx) => {
                 const timeRange = `${formatTime(activity.startTime)} - ${formatTime(activity.endTime)}`;
-                const photoLink = (activity.photoUrls && activity.photoUrls.length > 0) ? 'Lihat Foto' : '-';
 
                 const row = worksheet.getRow(currentRowIndex);
                 row.getCell(1).value = idx + 1; // Numbering resets daily
@@ -232,15 +230,9 @@ async function generateActivityExcel(activities, user, startDate, endDate) {
                 row.getCell(3).value = activity.title;
                 row.getCell(4).value = activity.description;
 
-                if (photoLink !== '-') {
-                    row.getCell(5).value = activity.photoUrls[0] || '-';
-                } else {
-                    row.getCell(5).value = '-';
-                }
-
                 // Styling
                 row.eachCell((cell, colNumber) => {
-                    if (colNumber <= 5) {
+                    if (colNumber <= 4) {
                         cell.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
                         cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
                         if (colNumber === 1 || colNumber === 2) {
@@ -248,13 +240,6 @@ async function generateActivityExcel(activities, user, startDate, endDate) {
                         }
                     }
                 });
-
-                // Hyperlink
-                if (photoLink !== '-' && activity.photoUrls && activity.photoUrls.length > 0) {
-                    const cell = row.getCell(5);
-                    cell.value = { text: 'Link Foto', hyperlink: activity.photoUrls[0] };
-                    cell.font = { color: { argb: 'FF0000FF' }, underline: true };
-                }
 
                 currentRowIndex++;
             });
