@@ -8,8 +8,6 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as presenceService from '../services/presence.service';
 import { useAuth } from '../contexts/AuthContext';
 
-import { useAuth } from '../contexts/AuthContext';
-
 // Fix for Leaflet default icon issues in React
 let DefaultIcon = L.icon({
     iconUrl: icon,
