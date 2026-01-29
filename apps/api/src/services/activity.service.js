@@ -124,9 +124,14 @@ async function exportActivities(userId, filters = {}) {
         };
     }
 
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true, jabatan: true },
+    });
+
     const activities = await prisma.activity.findMany({
         where,
-        orderBy: { date: 'desc' },
+        orderBy: { date: 'asc' }, // Sort ascending for the report
         include: {
             user: {
                 select: {
@@ -137,7 +142,7 @@ async function exportActivities(userId, filters = {}) {
         },
     });
 
-    return generateActivityExcel(activities);
+    return generateActivityExcel(activities, user, startDate, endDate);
 }
 
 module.exports = {

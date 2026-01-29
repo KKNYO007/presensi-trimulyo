@@ -6,6 +6,10 @@ const { uploadSelfie } = require('../middleware/upload');
 const router = express.Router();
 
 // All routes require authentication
+router.use((req, res, next) => {
+    console.log(`[Presence Route] ${req.method} ${req.url}`);
+    next();
+});
 router.use(auth);
 
 /**
@@ -115,7 +119,7 @@ router.get('/history', async (req, res, next) => {
  * GET /api/presence/export
  * Export presence data as Excel
  */
-router.get('/export', async (req, res, next) => {
+router.get('/export-v3', async (req, res, next) => {
     try {
         const { startDate, endDate } = req.query;
 
@@ -124,7 +128,13 @@ router.get('/export', async (req, res, next) => {
             endDate,
         });
 
-        const filename = `presensi_${req.user.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        // Parse Start Date for Filename
+        const dateObj = new Date(startDate);
+        const monthName = dateObj.toLocaleDateString('id-ID', { month: 'long' });
+        const year = dateObj.getFullYear();
+        const safeName = req.user.name.replace(/\s+/g, '_');
+
+        const filename = `${safeName}_Presensi_${monthName}_${year}.xlsx`;
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -145,7 +155,7 @@ router.get('/:id', async (req, res, next) => {
         const { id } = req.params;
 
         // Skip if ID is not a valid UUID or special keyword like 'today', 'history', 'export'
-        if (['today', 'history', 'export', 'check-in', 'check-out'].includes(id)) {
+        if (['today', 'history', 'export', 'export-v3', 'check-in', 'check-out'].includes(id)) {
             return next();
         }
 

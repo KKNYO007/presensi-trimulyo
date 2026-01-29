@@ -56,7 +56,20 @@ async function request(endpoint, options = {}) {
         if (!response.ok) {
             throw new Error('Download failed');
         }
-        return response.blob();
+        const blob = await response.blob();
+
+        // Extract filename from Content-Disposition header
+        const disposition = response.headers.get('content-disposition');
+        if (disposition && disposition.indexOf('attachment') !== -1) {
+            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            const matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1]) {
+                const filename = matches[1].replace(/['"]/g, '');
+                blob.fileName = filename; // Attach to blob
+            }
+        }
+
+        return blob;
     }
 
     const data = await response.json();

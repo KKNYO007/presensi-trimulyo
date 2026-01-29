@@ -88,7 +88,8 @@ router.get('/export', async (req, res, next) => {
             endDate,
         });
 
-        const filename = `kegiatan_${req.user.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        const safeName = req.user.name.replace(/\s+/g, '_');
+        const filename = `${safeName}_Aktivitas_${startDate}_${endDate}.xlsx`;
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

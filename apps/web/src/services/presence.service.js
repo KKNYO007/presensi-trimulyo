@@ -76,7 +76,7 @@ export async function exportPresence({ startDate, endDate } = {}) {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
 
-    const response = await get(`/presence/export?${params.toString()}`);
+    const response = await get(`/presence/export-v3?${params.toString()}`);
     return response;
 }
 

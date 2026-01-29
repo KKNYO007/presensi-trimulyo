@@ -254,9 +254,14 @@ async function exportPresence(userId, filters = {}) {
         };
     }
 
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true, jabatan: true },
+    });
+
     const presences = await prisma.presence.findMany({
         where,
-        orderBy: { date: 'desc' },
+        orderBy: { date: 'asc' },
         include: {
             user: {
                 select: {
@@ -267,7 +272,7 @@ async function exportPresence(userId, filters = {}) {
         },
     });
 
-    return generatePresenceExcel(presences);
+    return generatePresenceExcel(presences, user, filters.startDate, filters.endDate);
 }
 
 module.exports = {

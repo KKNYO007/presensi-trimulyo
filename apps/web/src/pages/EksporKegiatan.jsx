@@ -1,9 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import activityService from '../services/activity.service';
 
 export default function EksporKegiatan() {
     const navigate = useNavigate();
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleExport = async () => {
+        if (!startDate || !endDate) {
+            alert('Mohon pilih tanggal mulai dan selesai');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const blob = await activityService.exportActivities({ startDate, endDate });
+
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = blob.fileName || `Kegiatan_${startDate}_${endDate}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Export failed:", error);
+            alert(`Gagal mengunduh log kegiatan. Error: ${error.status || 'Unknown'}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="bg-background-light dark:bg-background-dark font-display text-[#181010] h-[100dvh] flex flex-col overflow-hidden">
@@ -37,14 +68,24 @@ export default function EksporKegiatan() {
                                 <div className="flex flex-col gap-2">
                                     <label className="font-serif font-bold text-primary dark:text-white text-base pl-1">Tanggal Mulai</label>
                                     <div className="relative group/input">
-                                        <input className="w-full pl-12 pr-4 py-4 rounded-xl border border-primary/10 focus:border-accent focus:ring-1 focus:ring-accent bg-background-light dark:bg-white/5 text-primary dark:text-white font-tech outline-none transition-all cursor-pointer shadow-sm hover:bg-white dark:hover:bg-white/10" type="date" />
+                                        <input
+                                            value={startDate}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-4 rounded-xl border border-primary/10 focus:border-accent focus:ring-1 focus:ring-accent bg-background-light dark:bg-white/5 text-primary dark:text-white font-tech outline-none transition-all cursor-pointer shadow-sm hover:bg-white dark:hover:bg-white/10"
+                                            type="date"
+                                        />
                                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within/input:text-accent transition-colors">calendar_month</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="font-serif font-bold text-primary dark:text-white text-base pl-1">Tanggal Selesai</label>
                                     <div className="relative group/input">
-                                        <input className="w-full pl-12 pr-4 py-4 rounded-xl border border-primary/10 focus:border-accent focus:ring-1 focus:ring-accent bg-background-light dark:bg-white/5 text-primary dark:text-white font-tech outline-none transition-all cursor-pointer shadow-sm hover:bg-white dark:hover:bg-white/10" type="date" />
+                                        <input
+                                            value={endDate}
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-4 rounded-xl border border-primary/10 focus:border-accent focus:ring-1 focus:ring-accent bg-background-light dark:bg-white/5 text-primary dark:text-white font-tech outline-none transition-all cursor-pointer shadow-sm hover:bg-white dark:hover:bg-white/10"
+                                            type="date"
+                                        />
                                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within/input:text-accent transition-colors">event_available</span>
                                     </div>
                                 </div>
@@ -54,10 +95,13 @@ export default function EksporKegiatan() {
                         <div className="flex-1"></div>
 
                         <div className="flex flex-col gap-2">
-                            <button className="w-full py-4 bg-accent hover:bg-[#c59a45] text-primary font-bold rounded-xl transition-all shadow-lg shadow-accent/20 active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden group">
+                            <button
+                                onClick={handleExport}
+                                disabled={loading}
+                                className="w-full py-4 bg-accent hover:bg-[#c59a45] text-primary font-bold rounded-xl transition-all shadow-lg shadow-accent/20 active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed">
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                                <span className="material-symbols-outlined relative z-10 text-[24px]">download</span>
-                                <span className="font-bold text-lg relative z-10 tracking-wide font-display">UNDUH FILE</span>
+                                <span className="material-symbols-outlined relative z-10 text-[24px]">{loading ? 'hourglass_top' : 'download'}</span>
+                                <span className="font-bold text-lg relative z-10 tracking-wide font-display">{loading ? 'MENGUNDUH...' : 'UNDUH FILE'}</span>
                             </button>
                             <p className="text-center font-serif text-primary dark:text-white/60 italic text-xs tracking-wide mt-2">* File otomatis terunduh</p>
                         </div>
