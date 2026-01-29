@@ -1,19 +1,72 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import { useAuth } from '../contexts/AuthContext';
+import * as authService from '../services/auth.service';
+import CameraCapture from '../components/CameraCapture';
 
 export default function Profil() {
     const navigate = useNavigate();
+    const { user, logout, updateUser } = useAuth();
+    const fileInputRef = useRef(null);
+    const [showCamera, setShowCamera] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [showEditMenu, setShowEditMenu] = useState(false);
+
+    // If no user data yet (shouldn't happen if protected route work properly, but safe guard)
+    if (!user) return null;
 
     const handleLogout = () => {
-        // Implement logout logic here if needed (e.g. clearing tokens)
-        navigate('/');
+        logout();
+    };
+
+    const handleFileSelect = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            await uploadAvatar(file);
+        }
+    };
+
+    const handleCameraCapture = async (blob) => {
+        await uploadAvatar(blob);
+        setShowCamera(false);
+    };
+
+    const uploadAvatar = async (file) => {
+        setUpdating(true);
+        setShowEditMenu(false);
+        try {
+            const updatedUser = await authService.updateAvatar(file);
+            updateUser(updatedUser);
+            // alert('Foto profil berhasil diperbarui!');
+        } catch (error) {
+            console.error('Update avatar error:', error);
+            alert(error.message || 'Gagal memperbarui foto profil');
+        } finally {
+            setUpdating(false);
+        }
     };
 
     return (
         <div className="bg-background-light dark:bg-background-dark font-display text-[#181010] h-[100dvh] flex flex-col overflow-hidden">
             {/* Background Pattern */}
             <div className="fixed inset-0 bg-batik-pattern z-0 pointer-events-none opacity-5"></div>
+
+            {showCamera && (
+                <CameraCapture
+                    onCapture={handleCameraCapture}
+                    onClose={() => setShowCamera(false)}
+                />
+            )}
+
+            {/* Hidden File Input */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileSelect}
+            />
 
             <div className="relative z-10 flex h-full grow flex-col items-center w-full max-w-[1440px] mx-auto overflow-hidden">
                 <div className="w-full max-w-[480px] h-full flex flex-col bg-white/80 dark:bg-[#1e1414]/90 shadow-2xl backdrop-blur-sm border-x border-[#f1eaea] dark:border-white/5 relative">
@@ -45,19 +98,61 @@ export default function Profil() {
 
                             <div className="relative z-10 p-8 flex flex-col gap-4 items-center text-center">
                                 <div className="relative">
-                                    <div className="h-28 w-28 rounded-full border-4 border-accent overflow-hidden shadow-xl bg-white/10">
-                                        <img alt="User Avatar" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7rfOnjJxhUpRi5-jweT4okr2eaWA9PYoogqamb3R2ChV936K0AwNmsPTwEU-x2lKh9zwbulMrPj3OevwoQk2SToWppNcF2g2tpqiKyf9FM65mErJKX6OGroIPxtR_Ev7D1KdnJNE7B3ORBZnUi1o0h5IiJImLEk_CsaXnamHgyhF0HdLxXv2DhObxodNgqLvSP37b-gm_lfKkI13wydmKS0H6_IBL6I_GoT1UhgE7Kb6vNFAzf1QbeaCCCAPeKP92Hid3eCNq8o4" />
+                                    <div className="h-28 w-28 rounded-full border-4 border-accent overflow-hidden shadow-xl bg-white/10 relative">
+                                        {updating && (
+                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+                                                <span className="material-symbols-outlined animate-spin text-white">refresh</span>
+                                            </div>
+                                        )}
+                                        <img
+                                            alt={user.name}
+                                            className="h-full w-full object-cover"
+                                            src={user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
+                                        />
                                     </div>
-                                    <div className="absolute bottom-0 right-0 p-1.5 bg-accent rounded-full text-primary shadow-sm border-2 border-primary">
-                                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>edit</span>
+
+                                    <div className="absolute bottom-0 right-0">
+                                        <button
+                                            onClick={() => setShowEditMenu(!showEditMenu)}
+                                            className="p-1.5 bg-accent rounded-full text-primary shadow-sm border-2 border-primary hover:scale-110 transition-transform"
+                                        >
+                                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>edit</span>
+                                        </button>
+
+                                        {/* Edit Menu Popover */}
+                                        {showEditMenu && (
+                                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white dark:bg-[#2a1f1f] rounded-xl shadow-xl border border-primary/10 overflow-hidden z-50 flex flex-col animate-[fade-in-up_0.2s_ease-out]">
+                                                <button
+                                                    onClick={() => { setShowCamera(true); setShowEditMenu(false); }}
+                                                    className="px-4 py-3 text-left text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-3 text-primary dark:text-white"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">photo_camera</span>
+                                                    Ambil Foto
+                                                </button>
+                                                <div className="h-px bg-gray-100 dark:bg-white/5"></div>
+                                                <button
+                                                    onClick={() => { fileInputRef.current.click(); setShowEditMenu(false); }}
+                                                    className="px-4 py-3 text-left text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-3 text-primary dark:text-white"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">image</span>
+                                                    Pilih dari Galeri
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Backdrop to close menu */}
+                                        {showEditMenu && (
+                                            <div className="fixed inset-0 z-40" onClick={() => setShowEditMenu(false)}></div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-center gap-1 mt-2">
-                                    <h2 className="font-serif text-2xl font-bold text-white tracking-wide">Ahmad Subekti</h2>
-                                    <p className="text-accent text-sm font-semibold uppercase tracking-widest">Staf Administrasi</p>
-                                    <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/20 text-white/70 text-xs font-medium border border-white/10 backdrop-blur-md">
+                                    <h2 className="font-serif text-2xl font-bold text-white tracking-wide">{user.name}</h2>
+                                    <p className="text-accent text-sm font-semibold uppercase tracking-widest">{user.jabatan}</p>
+                                    {/* NIP Hidden as requested */}
+                                    {/* <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/20 text-white/70 text-xs font-medium border border-white/10 backdrop-blur-md">
                                         <span>NIP. 19820312 201001 1 008</span>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

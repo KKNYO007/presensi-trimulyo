@@ -1,5 +1,5 @@
 // Authentication Service
-import { post, get, setToken, removeToken } from './api';
+import { post, get, postFormData, setToken, removeToken } from './api';
 
 /**
  * Login with email and password
@@ -42,9 +42,23 @@ export function isAuthenticated() {
     return !!localStorage.getItem('authToken');
 }
 
+/**
+ * Update user avatar
+ * @param {Blob|File} file - Image file
+ * @returns {Promise<Object>} Updated user data
+ */
+export async function updateAvatar(file) {
+    const formData = new FormData();
+    formData.append('avatar', file, 'avatar.jpg');
+
+    const response = await postFormData('/auth/avatar', formData);
+    return response.data;
+}
+
 export default {
     login,
     getMe,
     logout,
     isAuthenticated,
+    updateAvatar,
 };

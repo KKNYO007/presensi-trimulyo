@@ -69,4 +69,29 @@ async function getProfile(userId) {
 module.exports = {
     login,
     getProfile,
+    updateAvatar,
 };
+
+/**
+ * Update user avatar
+ * @param {string} userId - User ID
+ * @param {string} avatarUrl - URL of the uploaded avatar
+ * @returns {Promise<Object>} Updated user data
+ */
+async function updateAvatar(userId, avatarUrl) {
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: { avatarUrl },
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            jabatan: true,
+            phoneNumber: true,
+            avatarUrl: true,
+            createdAt: true,
+        },
+    });
+
+    return user;
+}

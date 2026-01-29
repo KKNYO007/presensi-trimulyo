@@ -48,4 +48,36 @@ router.get('/me', auth, async (req, res, next) => {
     }
 });
 
+/**
+ * PUT /api/auth/avatar
+ * Update user avatar
+ */
+const { uploadAvatar } = require('../middleware/upload');
+router.put('/avatar', auth, uploadAvatar, async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'File avatar wajib diupload',
+            });
+        }
+
+        const { uploadToSupabase } = require('../utils/storage');
+        // Reuse 'selfies' bucket or use a new 'avatars' bucket.
+        // As per plan, reuse 'selfies' for simplicity if permissions allow, or just 'avatars'.
+        // Plan said: reuse 'selfies'.
+        const avatarUrl = await uploadToSupabase(req.file.buffer, 'selfies', req.file.originalname);
+
+        const updatedUser = await authService.updateAvatar(req.user.id, avatarUrl);
+
+        res.json({
+            success: true,
+            message: 'Avatar berhasil diupdate',
+            data: updatedUser,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;

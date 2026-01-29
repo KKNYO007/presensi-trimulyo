@@ -115,7 +115,7 @@ export default function Login() {
                 </div>
                 <div className="mt-12 text-center">
                     <p className="text-primary/30 dark:text-white/20 text-[10px] font-display uppercase tracking-widest font-bold">
-                        Pemerintah Kalurahan Trimulyo © 2024
+                        Pemerintah Kalurahan Trimulyo © 2026
                     </p>
                 </div>
             </div>

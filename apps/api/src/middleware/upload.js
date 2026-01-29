@@ -78,4 +78,5 @@ const handleUpload = (uploadMiddleware) => {
 module.exports = {
     uploadSelfie: handleUpload(uploadSelfie),
     uploadActivityPhotos: handleUpload(uploadActivityPhotos),
+    uploadAvatar: handleUpload(upload.single('avatar')),
 };

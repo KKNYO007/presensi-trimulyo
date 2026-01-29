@@ -57,6 +57,8 @@ export function AuthProvider({ children }) {
         isAuthenticated: !!user,
         login,
         logout,
+        updateUser: (newData) => setUser(prev => ({ ...prev, ...newData })),
+        refreshProfile: checkAuth,
     };
 
     return (
