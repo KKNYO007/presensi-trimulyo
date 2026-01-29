@@ -49,11 +49,11 @@ router.get('/me', auth, async (req, res, next) => {
 });
 
 /**
- * PUT /api/auth/avatar
+ * POST /api/auth/avatar
  * Update user avatar
  */
 const { uploadAvatar } = require('../middleware/upload');
-router.put('/avatar', auth, uploadAvatar, async (req, res, next) => {
+router.post('/avatar', auth, uploadAvatar, async (req, res, next) => {
     try {
         if (!req.file) {
             return res.status(400).json({
