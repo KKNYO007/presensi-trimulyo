@@ -59,7 +59,7 @@ const PresensiMasuk = () => {
         }
 
         // Distance Check
-        if (distanceToOffice !== null && distanceToOffice > 1.0) {
+        if (distanceToOffice !== null && distanceToOffice > 2.0) {
             const confirmCheckIn = window.confirm(`Anda berada ${distanceToOffice.toFixed(2)}km dari kantor kalurahan. Lanjutkan presensi?`);
             if (!confirmCheckIn) return;
         }
@@ -342,8 +342,8 @@ const PresensiMasuk = () => {
                             <div className="flex flex-col gap-1 w-full">
                                 <div className="flex justify-between items-start">
                                     <h3 className="font-serif text-base font-bold text-primary dark:text-white">Lokasi Terkini</h3>
-                                    <span className={`px-2 py-0.5 rounded ${distanceToOffice !== null && distanceToOffice <= 1.0 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'} border text-[10px] font-bold font-tech tracking-wide uppercase`}>
-                                        {distanceToOffice !== null ? (distanceToOffice <= 1.0 ? 'Akurat' : 'Diluar Jangkauan') : 'Mencari...'}
+                                    <span className={`px-2 py-0.5 rounded ${distanceToOffice !== null && distanceToOffice <= 2.0 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'} border text-[10px] font-bold font-tech tracking-wide uppercase`}>
+                                        {distanceToOffice !== null ? (distanceToOffice <= 2.0 ? 'Akurat' : 'Diluar Jangkauan') : 'Mencari...'}
                                     </span>
                                 </div>
                                 <p className="font-tech text-xs text-gray-500 dark:text-gray-400 leading-relaxed">

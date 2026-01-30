@@ -12,6 +12,9 @@ export default function Profil() {
     const [showCamera, setShowCamera] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [showEditMenu, setShowEditMenu] = useState(false);
+    const [isFabOpen, setIsFabOpen] = useState(false);
+
+    const toggleFab = () => setIsFabOpen(!isFabOpen);
 
     // If no user data yet (shouldn't happen if protected route work properly, but safe guard)
     if (!user) return null;
@@ -211,8 +214,35 @@ export default function Profil() {
                         </div>
                     </main>
 
+                    {/* FAB Overlay */}
+                    {isFabOpen && (
+                        <div className="absolute inset-0 z-40 bg-background-light/50 dark:bg-black/50 backdrop-blur-sm flex flex-col items-center justify-end pb-32" onClick={() => setIsFabOpen(false)}>
+
+                            {/* Log Kegiatan Action */}
+                            <div className="relative flex items-center mb-5 group cursor-pointer animate-[fade-in-up_0.3s_ease-out]" onClick={(e) => { e.stopPropagation(); navigate('/log-kegiatan'); setIsFabOpen(false); }}>
+                                <span className="absolute right-[calc(100%+16px)] bg-white dark:bg-[#2a1f1f] text-primary dark:text-accent px-4 py-2 rounded-xl text-sm font-bold shadow-md font-serif border border-primary/10 whitespace-nowrap">
+                                    Log Kegiatan
+                                </span>
+                                <button className="size-14 rounded-full bg-accent hover:bg-[#eec575] text-primary flex items-center justify-center shadow-[0_4px_12px_rgba(212,168,83,0.5)] border-4 border-[#fbf9f9] dark:border-[#1e1414] transition-transform hover:scale-110">
+                                    <span className="material-symbols-outlined text-2xl font-bold">edit_note</span>
+                                </button>
+                            </div>
+
+                            {/* Presensi Action */}
+                            <div className="relative flex items-center mb-2 group cursor-pointer animate-[fade-in-up_0.2s_ease-out]" onClick={(e) => { e.stopPropagation(); navigate('/presensi-masuk'); setIsFabOpen(false); }}>
+                                <span className="absolute right-[calc(100%+16px)] bg-white dark:bg-[#2a1f1f] text-primary dark:text-accent px-4 py-2 rounded-xl text-sm font-bold shadow-md font-serif border border-primary/10 whitespace-nowrap">
+                                    Presensi
+                                </span>
+                                <button className="size-14 rounded-full bg-accent hover:bg-[#eec575] text-primary flex items-center justify-center shadow-[0_4px_12px_rgba(212,168,83,0.5)] border-4 border-[#fbf9f9] dark:border-[#1e1414] transition-transform hover:scale-110">
+                                    <span className="material-symbols-outlined text-2xl font-bold">photo_camera</span>
+                                </button>
+                            </div>
+
+                        </div>
+                    )}
+
                     {/* Bottom Navigation */}
-                    <BottomNav />
+                    <BottomNav isOpen={isFabOpen} onFabClick={toggleFab} />
                 </div>
             </div>
         </div>

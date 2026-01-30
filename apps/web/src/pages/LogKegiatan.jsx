@@ -94,9 +94,29 @@ const LogKegiatan = () => {
         setPhotoBlobs(prev => prev.filter((_, i) => i !== index));
     };
 
+    // Helper function to convert time string (HH:MM) to minutes
+    const timeToMinutes = (timeStr) => {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    };
+
     const handleSave = async () => {
         if (!title || !description || !startTime || !endTime) {
             alert('Mohon lengkapi semua field termasuk jam mulai dan selesai');
+            return;
+        }
+
+        // Validate that endTime is at least 1 minute after startTime
+        const startMinutes = timeToMinutes(startTime);
+        const endMinutes = timeToMinutes(endTime);
+
+        if (endMinutes <= startMinutes) {
+            alert('Jam Selesai harus lebih dari Jam Mulai');
+            return;
+        }
+
+        if (endMinutes - startMinutes < 1) {
+            alert('Jam Selesai harus minimal 1 menit setelah Jam Mulai');
             return;
         }
 
