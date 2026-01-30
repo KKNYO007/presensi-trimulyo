@@ -54,32 +54,25 @@ async function checkIn(userId, data) {
     // Determine status based on time
     const now = new Date();
 
-    // For Tepat Waktu logic, we also need to be careful. 
-    // WORK_SCHEDULE.checkInTime is local time (e.g. 07:30).
-    // We should compare against 'Today WIB at 07:30 WIB' converted to UTC/Absolute.
-    const [expectedHour, expectedMinute] = WORK_SCHEDULE.checkInTime.split(':').map(Number);
-    const expectedTime = new Date(today.getTime()); // Start with midnight WIB (stored as UTC)
-    // Subtract 7 hours to get back to real "Today Midnight in WIB" instant? 
-    // Wait, 'today' from getTodayWIB() returns a Date object representing 00:00 UTC of the target date.
-    // E.g. Jan 24 00:00 UTC.
-    // 07:30 WIB is Jan 24 00:30 UTC.
-    // So if 'today' is Jan 24 00:00 UTC...
-    // We just need to add (ExpectedHour - 7) hours? 
-    // OR simpler: comparing `now` (absolute) vs `target` (absolute).
-    // Target is: Today's Date (WIB) at ExpectedHour:ExpectedMinute (WIB).
-
-    // Let's assume 'today' is correct YYYY-MM-DD.
-    // We want YYYY-MM-DD HH:MM:00 WIB converted to standard Date object.
-
+    // Convert current time to WIB (UTC+7)
     const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
     const currentWIBHour = wibNow.getUTCHours();
     const currentWIBMinute = wibNow.getUTCMinutes();
 
-    // Simple comparison in "minutes from midnight"
+    // Calculate total minutes from midnight for comparison
     const currentTotalMinutes = currentWIBHour * 60 + currentWIBMinute;
-    const expectedTotalMinutes = expectedHour * 60 + expectedMinute;
 
-    const status = currentTotalMinutes > expectedTotalMinutes ? PRESENCE_STATUS.TERLAMBAT : PRESENCE_STATUS.TEPAT_WAKTU;
+    // Define time boundaries in minutes from midnight
+    const EARLIEST_CHECK_IN = 6 * 60; // 06:00 = 360 minutes
+    const LATEST_TEPAT_WAKTU = 8 * 60; // 08:00 = 480 minutes
+
+    // Check if before 06:00 - cannot check in
+    if (currentTotalMinutes < EARLIEST_CHECK_IN) {
+        throw { statusCode: 400, message: 'Presensi belum dapat dilakukan. Waktu presensi dimulai pukul 06:00 WIB.' };
+    }
+
+    // Determine status: TEPAT_WAKTU if between 06:00-08:00 (inclusive), TERLAMBAT after 08:00
+    const status = currentTotalMinutes <= LATEST_TEPAT_WAKTU ? PRESENCE_STATUS.TEPAT_WAKTU : PRESENCE_STATUS.TERLAMBAT;
 
     // Create presence record
     const presence = await prisma.presence.create({

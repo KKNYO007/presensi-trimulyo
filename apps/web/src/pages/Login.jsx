@@ -38,7 +38,7 @@ export default function Login() {
                             Sugeng Rawuh
                         </h1>
                         <p className="font-display text-[#8a5c5c] dark:text-[#a08080] text-sm font-medium tracking-wide uppercase">
-                            Sistem Presensi Desa Trimulyo
+                            Sistem Presensi Kalurahan Trimulyo
                         </p>
                     </div>
                 </div>

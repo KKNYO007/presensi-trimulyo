@@ -53,6 +53,14 @@ const PresensiMasuk = () => {
     };
 
     const handleCheckIn = async () => {
+        // Check if before 06:00 WIB
+        const now = new Date();
+        const currentHour = now.getHours();
+        if (currentHour < 6) {
+            alert('Presensi belum dapat dilakukan. Waktu presensi dimulai pukul 06:00 WIB.');
+            return;
+        }
+
         if (!currentLocation) {
             alert('Lokasi belum tersedia. Silakan tunggu.');
             return;
