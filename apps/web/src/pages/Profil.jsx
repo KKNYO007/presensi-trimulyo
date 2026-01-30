@@ -193,10 +193,11 @@ export default function Profil() {
                                     onClick={() => navigate('/ekspor-presensi')}
                                 />
                                 <MenuButton
-                                    icon="settings"
-                                    title="Pengaturan"
-                                    subtitle="Preferensi aplikasi"
+                                    icon="badge"
+                                    title="Data Diri"
+                                    subtitle="Informasi data diri"
                                     accent="accent"
+                                    onClick={() => navigate('/data-diri')}
                                 />
 
                                 <button

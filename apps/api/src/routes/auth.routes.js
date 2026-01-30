@@ -80,4 +80,65 @@ router.post('/avatar', auth, uploadAvatar, async (req, res, next) => {
     }
 });
 
+/**
+ * PUT /api/auth/profile
+ * Update user profile (phone number)
+ */
+router.put('/profile', auth, async (req, res, next) => {
+    try {
+        const { phoneNumber } = req.body;
+
+        if (!phoneNumber) {
+            return res.status(400).json({
+                success: false,
+                message: 'Nomor HP wajib diisi',
+            });
+        }
+
+        const updatedUser = await authService.updateProfile(req.user.id, phoneNumber);
+
+        res.json({
+            success: true,
+            message: 'Profil berhasil diupdate',
+            data: updatedUser,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * PUT /api/auth/password
+ * Update user password
+ */
+router.put('/password', auth, async (req, res, next) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password saat ini dan password baru wajib diisi',
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password baru minimal 6 karakter',
+            });
+        }
+
+        const updatedUser = await authService.updatePassword(req.user.id, currentPassword, newPassword);
+
+        res.json({
+            success: true,
+            message: 'Password berhasil diupdate',
+            data: updatedUser,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;

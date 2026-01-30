@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Logs from './pages/LogKegiatan';
 import PresensiMasuk from './pages/PresensiMasuk';
 import Profil from './pages/Profil';
+import DataDiri from './pages/DataDiri';
 import EksporKegiatan from './pages/EksporKegiatan';
 import EksporPresensi from './pages/EksporPresensi';
 import PengajuanIzin from './pages/PengajuanIzin';
@@ -41,6 +42,11 @@ function App() {
                     <Route path="/profil" element={
                         <ProtectedRoute>
                             <Profil />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/data-diri" element={
+                        <ProtectedRoute>
+                            <DataDiri />
                         </ProtectedRoute>
                     } />
                     <Route path="/ekspor-kegiatan" element={

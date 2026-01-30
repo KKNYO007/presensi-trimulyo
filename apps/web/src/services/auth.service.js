@@ -1,5 +1,5 @@
 // Authentication Service
-import { post, get, postFormData, setToken, removeToken } from './api';
+import { post, get, put, postFormData, setToken, removeToken } from './api';
 
 /**
  * Login with email and password
@@ -55,10 +55,33 @@ export async function updateAvatar(file) {
     return response.data;
 }
 
+/**
+ * Update user profile (phone number)
+ * @param {string} phoneNumber - New phone number
+ * @returns {Promise<Object>} Updated user data
+ */
+export async function updateProfile(phoneNumber) {
+    const response = await put('/auth/profile', { phoneNumber });
+    return response.data;
+}
+
+/**
+ * Update user password
+ * @param {string} currentPassword - Current password
+ * @param {string} newPassword - New password
+ * @returns {Promise<Object>} Updated user data
+ */
+export async function updatePassword(currentPassword, newPassword) {
+    const response = await put('/auth/password', { currentPassword, newPassword });
+    return response.data;
+}
+
 export default {
     login,
     getMe,
     logout,
     isAuthenticated,
     updateAvatar,
+    updateProfile,
+    updatePassword,
 };

@@ -70,6 +70,8 @@ module.exports = {
     login,
     getProfile,
     updateAvatar,
+    updateProfile,
+    updatePassword,
 };
 
 /**
@@ -94,4 +96,72 @@ async function updateAvatar(userId, avatarUrl) {
     });
 
     return user;
+}
+
+/**
+ * Update user profile (phone number)
+ * @param {string} userId - User ID
+ * @param {string} phoneNumber - New phone number
+ * @returns {Promise<Object>} Updated user data
+ */
+async function updateProfile(userId, phoneNumber) {
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: { phoneNumber },
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            jabatan: true,
+            phoneNumber: true,
+            avatarUrl: true,
+            createdAt: true,
+        },
+    });
+
+    return user;
+}
+
+/**
+ * Update user password
+ * @param {string} userId - User ID
+ * @param {string} currentPassword - Current password for verification
+ * @param {string} newPassword - New password
+ * @returns {Promise<Object>} Updated user data
+ */
+async function updatePassword(userId, currentPassword, newPassword) {
+    const { hashPassword } = require('../utils/password');
+
+    // Get user with current password
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+
+    if (!user) {
+        throw { statusCode: 404, message: 'User tidak ditemukan' };
+    }
+
+    // Verify current password
+    const isValidPassword = await comparePassword(currentPassword, user.password);
+    if (!isValidPassword) {
+        throw { statusCode: 401, message: 'Password saat ini salah' };
+    }
+
+    // Hash new password and update
+    const hashedPassword = await hashPassword(newPassword);
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            jabatan: true,
+            phoneNumber: true,
+            avatarUrl: true,
+            createdAt: true,
+        },
+    });
+
+    return updatedUser;
 }

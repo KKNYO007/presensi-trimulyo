@@ -100,6 +100,11 @@ const LogKegiatan = () => {
             return;
         }
 
+        if (photoBlobs.length < 1) {
+            alert('Mohon ambil minimal 1 foto kegiatan');
+            return;
+        }
+
         setLoading(true);
 
         try {
