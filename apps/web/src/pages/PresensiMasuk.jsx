@@ -15,6 +15,9 @@ const PresensiMasuk = () => {
     const [alreadyCheckedIn, setAlreadyCheckedIn] = useState(false);
     const [cameraError, setCameraError] = useState(null);
     const [retryTrigger, setRetryTrigger] = useState(0);
+    const [locationLoading, setLocationLoading] = useState(true);
+    const [locationError, setLocationError] = useState(null);
+    const [locationRetryTrigger, setLocationRetryTrigger] = useState(0);
 
     // Kantor Kelurahan Trimulyo Coordinates
     const OFFICE_COORDS = { lat: -7.682067371531455, lng: 110.35755937948723 };
@@ -117,19 +120,47 @@ const PresensiMasuk = () => {
             }
         }
         checkTodayPresence();
+    }, [navigate]);
 
-        // Get User Location
-        if (navigator.geolocation) {
+    // Separate useEffect for location handling with retry capability
+    useEffect(() => {
+        let isMounted = true;
+        let retryCount = 0;
+        const MAX_LOCATION_RETRIES = 3;
+
+        const getLocation = () => {
+            if (!navigator.geolocation) {
+                setLocationError("Geolocation tidak didukung oleh browser ini.");
+                setLocationLoading(false);
+                return;
+            }
+
+            setLocationLoading(true);
+            setLocationError(null);
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    if (!isMounted) return;
                     const { latitude, longitude } = position.coords;
                     setCurrentLocation({ lat: latitude, lng: longitude });
 
                     const dist = calculateDistance(latitude, longitude, OFFICE_COORDS.lat, OFFICE_COORDS.lng);
                     setDistanceToOffice(dist);
+                    setLocationLoading(false);
+                    setLocationError(null);
                 },
                 (error) => {
+                    if (!isMounted) return;
                     console.error("Error getting location:", error.message, error.code);
+
+                    // Auto-retry for timeout errors
+                    if (error.code === 3 && retryCount < MAX_LOCATION_RETRIES) {
+                        retryCount++;
+                        console.log(`Location timeout. Retrying (${retryCount}/${MAX_LOCATION_RETRIES})...`);
+                        setTimeout(getLocation, 1000);
+                        return;
+                    }
+
                     let errorMessage = "Gagal mendapatkan lokasi.";
                     switch (error.code) {
                         case 1: // PERMISSION_DENIED
@@ -139,23 +170,30 @@ const PresensiMasuk = () => {
                             errorMessage = "Informasi lokasi tidak tersedia. Pastikan GPS aktif.";
                             break;
                         case 3: // TIMEOUT
-                            errorMessage = "Waktu permintaan lokasi habis. Coba lagi.";
+                            errorMessage = "Waktu permintaan lokasi habis. Pastikan GPS aktif dan coba lagi.";
                             break;
                         default:
                             errorMessage = `Terjadi kesalahan: ${error.message}`;
                     }
-                    alert(errorMessage);
+                    setLocationError(errorMessage);
+                    setLocationLoading(false);
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
+                    timeout: 30000, // Increased to 30 seconds for better reliability
+                    maximumAge: 60000 // Allow cached position up to 1 minute old
                 }
             );
-        } else {
-            alert("Geolocation tidak didukung oleh browser ini.");
-        }
+        };
 
+        getLocation();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [locationRetryTrigger]);
+
+    useEffect(() => {
         let stream = null;
         let isMounted = true;
         let retryCount = 0;
@@ -343,25 +381,54 @@ const PresensiMasuk = () => {
                     {/* Info Cards */}
                     <div className="flex flex-col gap-4">
                         {/* Location Card */}
-                        <div className="flex items-start gap-4 p-4 bg-white dark:bg-[#2a1f1f] rounded-xl shadow-sm border border-gray-100 dark:border-white/5">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/5 text-primary dark:bg-primary/20 border border-primary/10">
-                                <span className="material-symbols-outlined text-[20px]">location_on</span>
+                        <div className={`flex items-start gap-4 p-4 bg-white dark:bg-[#2a1f1f] rounded-xl shadow-sm border ${locationError ? 'border-red-200 dark:border-red-900/30' : 'border-gray-100 dark:border-white/5'}`}>
+                            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${locationError ? 'bg-red-50 text-red-600 dark:bg-red-900/20' : 'bg-primary/5 text-primary dark:bg-primary/20'} border ${locationError ? 'border-red-200' : 'border-primary/10'}`}>
+                                {locationLoading ? (
+                                    <div className="size-5 rounded-full border-2 border-primary/30 border-t-primary animate-spin"></div>
+                                ) : locationError ? (
+                                    <span className="material-symbols-outlined text-[20px]">error</span>
+                                ) : (
+                                    <span className="material-symbols-outlined text-[20px]">location_on</span>
+                                )}
                             </div>
                             <div className="flex flex-col gap-1 w-full">
                                 <div className="flex justify-between items-start">
                                     <h3 className="font-serif text-base font-bold text-primary dark:text-white">Lokasi Terkini</h3>
-                                    <span className={`px-2 py-0.5 rounded ${distanceToOffice !== null && distanceToOffice <= 2.0 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'} border text-[10px] font-bold font-tech tracking-wide uppercase`}>
-                                        {distanceToOffice !== null ? (distanceToOffice <= 2.0 ? 'Akurat' : 'Diluar Jangkauan') : 'Mencari...'}
+                                    <span className={`px-2 py-0.5 rounded ${locationLoading ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                        locationError ? 'bg-red-50 text-red-700 border-red-200' :
+                                            distanceToOffice !== null && distanceToOffice <= 2.0 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
+                                        } border text-[10px] font-bold font-tech tracking-wide uppercase`}>
+                                        {locationLoading ? 'Mencari...' :
+                                            locationError ? 'Error' :
+                                                distanceToOffice !== null ? (distanceToOffice <= 2.0 ? 'Akurat' : 'Diluar Jangkauan') : 'Mencari...'}
                                     </span>
                                 </div>
-                                <p className="font-tech text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                                    {currentLocation ? `Jarak: ${distanceToOffice.toFixed(2)}km dari Kantor` : 'Sedang mendeteksi lokasi...'}
-                                </p>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <span className="text-[10px] text-gray-400 font-tech font-mono bg-gray-50 px-1.5 py-0.5 rounded">
-                                        {currentLocation ? `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}` : '...'}
-                                    </span>
-                                </div>
+                                {locationError ? (
+                                    <>
+                                        <p className="font-tech text-xs text-red-600 dark:text-red-400 leading-relaxed">
+                                            {locationError}
+                                        </p>
+                                        <button
+                                            onClick={() => setLocationRetryTrigger(prev => prev + 1)}
+                                            className="mt-2 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary dark:text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1 w-fit"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">refresh</span>
+                                            Coba Lagi
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="font-tech text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                            {locationLoading ? 'Sedang mendeteksi lokasi...' :
+                                                currentLocation ? `Jarak: ${distanceToOffice.toFixed(2)}km dari Kantor` : 'Sedang mendeteksi lokasi...'}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-[10px] text-gray-400 font-tech font-mono bg-gray-50 px-1.5 py-0.5 rounded">
+                                                {currentLocation ? `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}` : '...'}
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -387,7 +454,7 @@ const PresensiMasuk = () => {
                     {/* Check-in Button */}
                     <button
                         onClick={handleCheckIn}
-                        disabled={loading || !currentLocation}
+                        disabled={loading || !currentLocation || locationLoading || locationError}
                         className="w-full py-4 bg-accent hover:bg-[#c59a45] text-primary font-bold rounded-xl transition-all shadow-lg shadow-accent/20 active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                         {loading ? (
