@@ -85,7 +85,10 @@ const DetailPresensi = () => {
         return timeStr.substring(0, 5).replace('.', ':');
     }
 
-    const officePosition = [-7.7123, 110.3645]; // Kantor Kelurahan Trimulyo
+    const officePosition = [
+        parseFloat(import.meta.env.VITE_OFFICE_LAT || -7.7123),
+        parseFloat(import.meta.env.VITE_OFFICE_LNG || 110.3645)
+    ]; // Kantor Kelurahan Trimulyo
     const userPosition = presence?.latitude && presence?.longitude
         ? [parseFloat(presence.latitude), parseFloat(presence.longitude)]
         : null;
@@ -165,7 +168,7 @@ const DetailPresensi = () => {
                                             <div>
                                                 <p className="text-accent/90 text-[10px] font-bold uppercase tracking-widest">Koordinat Presensi</p>
                                                 <p className="font-mono text-base text-white/95 mt-0.5 tracking-tight">{presence.latitude}, {presence.longitude}</p>
-                                                <p className="text-xs text-white/60 mt-1 leading-relaxed">Kantor Kelurahan Trimulyo, Bantul, Yogyakarta</p>
+
                                             </div>
                                         </div>
                                     </div>

@@ -20,7 +20,10 @@ const PresensiMasuk = () => {
     const [locationRetryTrigger, setLocationRetryTrigger] = useState(0);
 
     // Kantor Kelurahan Trimulyo Coordinates
-    const OFFICE_COORDS = { lat: -7.682067371531455, lng: 110.35755937948723 };
+    const OFFICE_COORDS = {
+        lat: parseFloat(import.meta.env.VITE_OFFICE_LAT || -7.682067371531455),
+        lng: parseFloat(import.meta.env.VITE_OFFICE_LNG || 110.35755937948723)
+    };
 
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const R = 6371; // Radius of the earth in km
