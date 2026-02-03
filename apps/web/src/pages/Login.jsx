@@ -8,8 +8,26 @@ export default function Login() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    // Check for saved credentials
+    React.useEffect(() => {
+        const savedEmail = localStorage.getItem('presensi_email');
+        const savedPassword = localStorage.getItem('presensi_password');
+
+        if (savedEmail && savedPassword) {
+            setEmail(savedEmail);
+            try {
+                setPassword(atob(savedPassword)); // Decode password
+                setRememberMe(true);
+            } catch (e) {
+                console.error("Failed to decode password", e);
+                localStorage.removeItem('presensi_password');
+            }
+        }
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -18,6 +36,15 @@ export default function Login() {
 
         try {
             await login(email, password);
+
+            if (rememberMe) {
+                localStorage.setItem('presensi_email', email);
+                localStorage.setItem('presensi_password', btoa(password)); // Simple encoding
+            } else {
+                localStorage.removeItem('presensi_email');
+                localStorage.removeItem('presensi_password');
+            }
+
             navigate('/dashboard');
         } catch (err) {
             setError(err.message || 'Login gagal. Silakan coba lagi.');
@@ -89,7 +116,12 @@ export default function Login() {
                         </div>
                         <div className="flex items-center justify-between mt-2">
                             <label className="flex items-center gap-2 cursor-pointer group/chk">
-                                <input className="rounded border-primary/30 text-primary focus:ring-accent w-4 h-4 bg-[#fbf9f9]" type="checkbox" />
+                                <input
+                                    className="rounded border-primary/30 text-primary focus:ring-accent w-4 h-4 bg-[#fbf9f9]"
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                />
                                 <span className="text-xs text-[#8a5c5c] font-medium group-hover/chk:text-primary transition-colors">Ingat Saya</span>
                             </label>
                             <a className="text-xs font-bold text-primary hover:text-accent transition-colors" href="#">Lupa Sandi?</a>

@@ -108,6 +108,13 @@ const DataDiri = () => {
                                         {user.jabatan}
                                     </div>
                                 </div>
+                                <div className="space-y-2">
+                                    <label className="text-primary/70 dark:text-white/70 text-sm font-sans font-medium uppercase tracking-wider pl-1">Email</label>
+                                    <div className="w-full px-4 py-3 bg-primary/5 dark:bg-white/5 border border-primary/10 rounded-xl text-primary/80 dark:text-white/80 font-sans font-medium flex items-center gap-3 select-none">
+                                        <span className="material-symbols-outlined text-[20px] opacity-60">mail</span>
+                                        {user.email}
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-4 my-2">
