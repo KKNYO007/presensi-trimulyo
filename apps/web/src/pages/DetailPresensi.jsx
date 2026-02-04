@@ -85,10 +85,10 @@ const DetailPresensi = () => {
         return timeStr.substring(0, 5).replace('.', ':');
     }
 
-    const officePosition = [
-        parseFloat(import.meta.env.VITE_OFFICE_LAT || -7.7123),
-        parseFloat(import.meta.env.VITE_OFFICE_LNG || 110.3645)
-    ]; // Kantor Kelurahan Trimulyo
+    const OFFICE_LAT = parseFloat(import.meta.env.VITE_OFFICE_LAT || -7.682067371531455);
+    const OFFICE_LNG = parseFloat(import.meta.env.VITE_OFFICE_LNG || 110.35755937948723);
+
+    const officePosition = [OFFICE_LAT, OFFICE_LNG]; // Kantor Kelurahan Trimulyo
     const userPosition = presence?.latitude && presence?.longitude
         ? [parseFloat(presence.latitude), parseFloat(presence.longitude)]
         : null;

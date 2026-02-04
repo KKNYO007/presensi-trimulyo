@@ -20,9 +20,14 @@ const PresensiMasuk = () => {
     const [locationRetryTrigger, setLocationRetryTrigger] = useState(0);
 
     // Kantor Kelurahan Trimulyo Coordinates
+    // Kantor Kelurahan Trimulyo Coordinates
+    const OFFICE_LAT = parseFloat(import.meta.env.VITE_OFFICE_LAT || -7.682067371531455);
+    const OFFICE_LNG = parseFloat(import.meta.env.VITE_OFFICE_LNG || 110.35755937948723);
+    const MAX_DISTANCE_KM = parseFloat(import.meta.env.VITE_MAX_DISTANCE_KM || 3.0);
+
     const OFFICE_COORDS = {
-        lat: parseFloat(import.meta.env.VITE_OFFICE_LAT || -7.682067371531455),
-        lng: parseFloat(import.meta.env.VITE_OFFICE_LNG || 110.35755937948723)
+        lat: OFFICE_LAT,
+        lng: OFFICE_LNG
     };
 
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -73,7 +78,7 @@ const PresensiMasuk = () => {
         }
 
         // Distance Check
-        if (distanceToOffice !== null && distanceToOffice > 2.0) {
+        if (distanceToOffice !== null && distanceToOffice > MAX_DISTANCE_KM) {
             const confirmCheckIn = window.confirm(`Anda berada ${distanceToOffice.toFixed(2)}km dari kantor kalurahan. Lanjutkan presensi?`);
             if (!confirmCheckIn) return;
         }
@@ -399,11 +404,11 @@ const PresensiMasuk = () => {
                                     <h3 className="font-serif text-base font-bold text-primary dark:text-white">Lokasi Terkini</h3>
                                     <span className={`px-2 py-0.5 rounded ${locationLoading ? 'bg-blue-50 text-blue-700 border-blue-200' :
                                         locationError ? 'bg-red-50 text-red-700 border-red-200' :
-                                            distanceToOffice !== null && distanceToOffice <= 2.0 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
+                                            distanceToOffice !== null && distanceToOffice <= MAX_DISTANCE_KM ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
                                         } border text-[10px] font-bold font-tech tracking-wide uppercase`}>
                                         {locationLoading ? 'Mencari...' :
                                             locationError ? 'Error' :
-                                                distanceToOffice !== null ? (distanceToOffice <= 2.0 ? 'Akurat' : 'Diluar Jangkauan') : 'Mencari...'}
+                                                distanceToOffice !== null ? (distanceToOffice <= MAX_DISTANCE_KM ? 'Akurat' : 'Diluar Jangkauan') : 'Mencari...'}
                                     </span>
                                 </div>
                                 {locationError ? (
